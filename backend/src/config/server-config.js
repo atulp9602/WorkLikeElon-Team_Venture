@@ -7,4 +7,5 @@ const connect = ()=>{
 module.exports = {
     PORT:process.env.PORT,
     connect,
+    JWT_SECRET:process.env.JWT_SECRET,
 }

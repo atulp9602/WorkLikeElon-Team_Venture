@@ -21,6 +21,16 @@ class CrudRepository {
             throw error;
         }
     }
+
+    async findBy(filter) {
+        try {
+            const response = await this.model.findOne(filter);
+
+            return response;
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 
 module.exports = CrudRepository;
