@@ -21,7 +21,6 @@ class UserService {
     async signIn(user){
         try {
             const userExists = await this.userRepository.findBy({email: user.email});
-            console.log(userExists);
             if(!userExists) {
                 throw new Error(`User ${user.email} does not exist`);
             }
@@ -35,6 +34,16 @@ class UserService {
         } catch (error) {
             console.log(error);
             throw new Error(error.message);
+        }
+    }
+
+    async userInfo(userID) {
+        try {
+            const userData = await this.userRepository.findBy({_id:userID});
+
+            return {_id: userData._id,username: userData.username,email: userData.email};
+        } catch (error) {
+            throw new Error(error.message);   
         }
     }
 }

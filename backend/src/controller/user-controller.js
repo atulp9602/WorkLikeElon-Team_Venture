@@ -15,10 +15,10 @@ module.exports = {
             })
         } catch (error) {
             return res.status(500).json({
-                success:true,
+                success:false,
                 data:{},
                 message: 'There is an error for creating the user',
-                error:error,
+                error:error.message,
             });
         }
     },
@@ -41,6 +41,28 @@ module.exports = {
                 message: 'There is an error in user signin',
                 error:error.message,
             });
+        }
+    },
+
+    async userInfo(req,res){
+        try {
+            const userId = req.user.id;
+            console.log(userId);
+            const response = await userService.userInfo(userId);
+
+            return res.status(200).json({
+                sucess:true,
+                data:response,
+                message: 'Successfully fetched user info',
+                error: {},
+            })
+        } catch (error) {
+            return res.status(500).json({
+                sucess: false,
+                data:{},
+                message:'Error while fetching user information',
+                error: error.message
+            })
         }
     }
 }
