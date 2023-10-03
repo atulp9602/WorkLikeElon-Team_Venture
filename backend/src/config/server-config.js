@@ -10,4 +10,6 @@ module.exports = {
     PORT:process.env.PORT,
     connect,
     JWT_SECRET:process.env.JWT_SECRET,
+    EMAIL:process.env.EMAIL,
+    EMAIL_PASSWORD:process.env.EMAIL_PASSWORD,
 }
