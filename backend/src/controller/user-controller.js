@@ -44,6 +44,28 @@ module.exports = {
         }
     },
 
+    async createPassword(req, res) {
+        try {
+            const userId = req.user.id;
+            const {password} = {...req.body};
+            const response = await userService.updatePassword(userId, password);
+
+            return res.status(200).json({
+                success : true ,
+                data: response,
+                message: 'Password updated successfully',
+                error: {},
+            })
+        } catch (error) {
+            return res.status(500).json({
+                success : false,
+                data:{},
+                message: 'An error occurred while updating the password',
+                error:error.message,
+            })
+        }
+    },
+
     async userInfo(req,res){
         try {
             const userId = req.user.id;

@@ -35,8 +35,9 @@ class UserService {
             const password = this.generateAlphanumericPassword(8);
             user.password = password;
             const response = await this.userRepository.createOne(user);
+            const token = jwt.sign({user},JWT_SECRET,{expiresIn:'1d'});
             // Send email to the newly created account with a temporary password
-            await sendEmail('Temp Password', `<p>Hi, your temp password is :${password}</p>`,user.email);
+            await sendEmail('Temp Password', `<p>Your temporary password is: ${password}.<br>Click the following link to change your password: http://localhost:3000/create-password/${token}</p>`,user.email);
             console.log(user.email);
             return { username: response.username, email: response.email, _id: response._id };
         } catch (error) {
@@ -52,6 +53,7 @@ class UserService {
                 throw new Error(`User ${user.email} does not exist`);
             }
             const passwordMatchs = bcrypt.compareSync(user.password,userExists.password);
+            console.log(passwordMatchs);
             if (!passwordMatchs) {
                 throw new Error("Invalid credentials");
             }
@@ -60,6 +62,17 @@ class UserService {
             return token;
         } catch (error) {
             console.log(error);
+            throw new Error(error.message);
+        }
+    }
+
+    async updatePassword(userId, newpassword) {
+        try {
+            console.log('The new passoword is:', newpassword);
+            const result = await this.userRepository.updateOne(userId, {password:newpassword});
+            
+            return result;
+        } catch (error) {
             throw new Error(error.message);
         }
     }

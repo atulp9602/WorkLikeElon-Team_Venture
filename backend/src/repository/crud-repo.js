@@ -12,10 +12,10 @@ class CrudRepository {
         }
     }
 
-    async updateOne(data) {
+    async updateOne(id,data) {
         try {
-            const response = await this.model.findOneAndUpdate({data},{new: true});
-
+            const response = await this.model.findByIdAndUpdate(id,data,{ new: true,runValidators: true });
+            response.save();
             return response;
         } catch (error) {
             throw error;
