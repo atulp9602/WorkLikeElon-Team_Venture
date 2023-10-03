@@ -7,11 +7,11 @@ const todoSchema = new mongoose.Schema({
     },
     description: {
         type: String,
-        required: true,
+        // required: true,
     },
-    sequence: {
-        type: Number,
-    }
+    // sequence: {
+    //     type: Number,
+    // }
 });
 
 const Todo = mongoose.model('Todo',todoSchema,'Todo');

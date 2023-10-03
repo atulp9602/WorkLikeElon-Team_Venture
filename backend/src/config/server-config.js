@@ -1,8 +1,10 @@
-const dotenv = require('dotenv');
+const dotenv = require('dotenv').config();
 const mongoose = require('mongoose');
-dotenv.config();
-const connect = ()=>{
-    mongoose.connect('mongodb://localhost:27017/todoapp_db');
+
+// dotenv.config();
+const CONNECTION_URL = process.env.CONNECTION_URL;
+const connect = async()=>{
+    await mongoose.connect(CONNECTION_URL);
 }
 module.exports = {
     PORT:process.env.PORT,
