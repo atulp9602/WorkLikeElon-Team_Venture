@@ -4,8 +4,10 @@ const UserRepository = require('../repository/user-repo');
 
 const validateProtectedRoute = async(req,res,next) => {
     try {
-      console.log('The password in 2nd middleware:',req.body.password);
-        const token = req.header('Authorization');
+        let token = req.header('Authorization');
+        if(!token) {
+          token = req.params.token;
+        }
         if(!token) {
             return res.status(401).json({error:'Token is missing'});
         }
@@ -43,9 +45,12 @@ const contactnoValidator = (contactno) =>{
 
 const checkCredentials = (req, res, next) => {
     const route = req.path;
+    if(req.params.token){
+      var token = req.params.token;
+    }
   
     switch (route) {
-      case '/reset-password':{
+      case `/reset-password/${token}`:{
         const {newpassword} = {...req.body};
         if (!newpassword) {
           return res.status(400).json({ error: 'Password is required' });
@@ -55,7 +60,7 @@ const checkCredentials = (req, res, next) => {
         }
         break;
       }
-      case '/change-password':{
+      case `/change-password/${token}`:{
         const {oldpassword,newpassword}= {...req.body};
         if (!oldpassword || !newpassword ) {
           return res.status(400).json({ error:'Old Password and New Passowrd are Required'});
