@@ -4,6 +4,7 @@ const UserRepository = require('../repository/user-repo');
 
 const validateProtectedRoute = async(req,res,next) => {
     try {
+      console.log('The password in 2nd middleware:',req.body.password);
         const token = req.header('Authorization');
         if(!token) {
             return res.status(401).json({error:'Token is missing'});
@@ -26,25 +27,88 @@ const validateProtectedRoute = async(req,res,next) => {
     }
 };
 
-const checkCredentials = (req, res, next) => {
-    try {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        // const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-        if((!emailRegex.test(req.body.email))) {
-            return res.status(400).json({ 
-                sucess: false,
-                error: 'Invalid email' 
-            });
-        }
-        next();
-    } catch (error) {
-        console.log(`Error in checking credentials`, error )
-        return res.status(500).json({
-            sucess:false,
-            error:"Internal Server Error"
-        });
-    }
+const emailValidator = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+  
+const passwordValidator = (password) => {
+   const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+   return passwordRegex.test(password);
+};
+
+const contactnoValidator = (contactno) =>{
+    return /^\d{10}$/.test(contactno);  //regular expression to check for valid phone number
 }
+
+const checkCredentials = (req, res, next) => {
+    const route = req.path;
+  
+    switch (route) {
+      case '/reset-password':{
+        const {newpassword} = {...req.body};
+        if (!newpassword) {
+          return res.status(400).json({ error: 'Password is required' });
+        }
+        if (!(passwordValidator(newpassword))) {
+            return res.status(400).json({ error: 'Password length should be minimum 8 characters and alpha-numeric characters' });
+        }
+        break;
+      }
+      case '/change-password':{
+        const {oldpassword,newpassword}= {...req.body};
+        if (!oldpassword || !newpassword ) {
+          return res.status(400).json({ error:'Old Password and New Passowrd are Required'});
+        }
+        if((!passwordValidator(oldpassword)||!passwordValidator(newpassword))) {
+         return res.status(400).json({ error:'Password length should be minimum 8 characters and alpha-numeric characters'})
+        }
+        break;
+      }
+      case '/forgot-password':{
+        const {email} = {...req.body};
+        if (!email) {
+          return res.status(400).json({ error: 'Email is required' });
+        }
+        if (!emailValidator(email)) {
+            return res.status(400).json({ error: "Please enter a valid Email" })
+        }
+        break;
+      }
+      case '/signin':{
+        const {email,password} = {...req.body}
+        if (!email || !password) {
+          return res.status(400).json({ error: 'Email and password are required' });
+        }
+        if(!emailValidator(email)) {
+            return res.status(400).json({ error: "Please enter a valid Email Id."})
+        }
+        else if(!(passwordValidator(password))){
+            return res.status(400).json({ error: "Invalid password format"});
+        }
+        break;
+      }
+      case '/signup':{
+        const {email,contactno,username} = {...req.body};
+        if (!email || !contactno || !username) {
+          return res.status(400).json({ error: 'Email, contactno or username is required'});
+        }
+        if(!emailValidator(email)){
+            return res.status(400).json({error:"Enter Valid email"});
+        }
+        else if(!contactnoValidator(contactno)) {
+            return res.status(400).json({error:"Enter Valid mobile number"});
+        }
+        break;
+      }
+      default:
+        break;
+    }
+  
+    // If all required fields are present, continue to the next middleware or route.
+    next();
+  };
+  
 
 module.exports = {
     validateProtectedRoute,

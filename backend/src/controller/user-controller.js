@@ -5,12 +5,12 @@ module.exports = {
     async signUp(req, res) {
         try {
             const {username,email,contactno} = {...req.body};
+            console.log(username, email, contactno);
             const user = await userService.createUser({username, email, contactno});
-
             return res.status(201).json({
                 success:true,
                 data:user,
-                message: 'User created successfully',
+                message: 'Check your email address for password',
                 error:{},
             });
         } catch (error) {
@@ -47,9 +47,13 @@ module.exports = {
     async updatePassword(req, res) {
         try {
             const userId = req.user.id;
-            const {password} = {...req.body};
-            const response = await userService.updatePassword(userId, password);
-
+            const { oldpassword, newpassword } = {...req.body};
+            let response;
+            if(oldpassword) {
+                response = await userService.updatePassword(userId, newpassword,oldpassword);
+            } else {
+                response = await userService.updatePassword(userId, newpassword);
+            }
             return res.status(200).json({
                 success : true ,
                 data: response,

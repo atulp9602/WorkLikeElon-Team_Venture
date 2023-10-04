@@ -37,13 +37,15 @@ class UserService {
             }
             const password = this.generateAlphanumericPassword(8);
             user.password = password;
-            const response = await this.userRepository.createOne(user);
+            const response = await this._userRepository.createOne(user);
             const token = this.generateToken(user);
             let url = `http://localhost:3001/create-password?token=${token}`;
             // Send email to the newly created account with a temporary password
             await sendEmail('Temp Password', `<p>Your password is: ${password}.<br>Click the following link to change your password:${url}</p>`,user.email);
-            console.log(user.email);
-            return { username: response.username, email: response.email, _id: response._id };
+            const plainresult = response.toObject();
+            delete plainresult.password;
+
+            return plainresult;
         } catch (error) {
             console.log(error);
             throw error;
@@ -70,9 +72,15 @@ class UserService {
         }
     }
 
-    async updatePassword(userId, newpassword) {
+    async updatePassword(userId, newpassword,currentPassword = null) {
         try {
-            console.log('The new passoword is:', newpassword);
+            if(currentPassword) {
+                const user = await this._userRepository.findBy({_id: userId});
+                const passwordMatch = bcrypt.compareSync(currentPassword, user.password);
+                if(!passwordMatch) {
+                    throw new Error("Invalid current password");
+                }
+            }
             const result = await this._userRepository.updateOne(userId, {password:newpassword});
             const plainResult = result.toObject();
             delete plainResult.password;
