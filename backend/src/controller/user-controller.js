@@ -44,7 +44,7 @@ module.exports = {
         }
     },
 
-    async createPassword(req, res) {
+    async updatePassword(req, res) {
         try {
             const userId = req.user.id;
             const {password} = {...req.body};
@@ -62,6 +62,27 @@ module.exports = {
                 data:{},
                 message: 'An error occurred while updating the password',
                 error:error.message,
+            })
+        }
+    },
+
+    async resetPassword(req, res) {
+        try {
+            const {email} = {...req.body};
+            await userService.resetPassword(email);
+
+            return res.status(200).json({
+                success:true ,
+                data:{},
+                message:'A password reset link was sent to your registered Email',
+                error:{},
+            });
+        } catch (error) {
+            return res.status(500).json({
+                sucess:false,
+                data:{},
+                message:'An error occurred while resetting your password',
+                errors:error.message,
             })
         }
     },

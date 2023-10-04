@@ -6,7 +6,10 @@ const {JWT_SECRET} = require('../config/server-config');
 
 class UserService {
     constructor() {
-        this.userRepository = new UserRepository();
+        this._userRepository = new UserRepository();
+    }
+    generateToken(user) {
+        return jwt.sign({user}, JWT_SECRET,{expiresIn:'1d'});
     }
     generateRandomPassword(length) {
         const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -28,16 +31,17 @@ class UserService {
 
     async createUser(user) {
         try {
-            const userExists = await this.userRepository.findBy({email: user.email});
+            const userExists = await this._userRepository.findBy({email: user.email});
             if(userExists) {
                 throw Error("Email already exists",);
             }
             const password = this.generateAlphanumericPassword(8);
             user.password = password;
             const response = await this.userRepository.createOne(user);
-            const token = jwt.sign({user},JWT_SECRET,{expiresIn:'1d'});
+            const token = this.generateToken(user);
+            let url = `http://localhost:3001/create-password?token=${token}`;
             // Send email to the newly created account with a temporary password
-            await sendEmail('Temp Password', `<p>Your temporary password is: ${password}.<br>Click the following link to change your password: http://localhost:3000/create-password/${token}</p>`,user.email);
+            await sendEmail('Temp Password', `<p>Your password is: ${password}.<br>Click the following link to change your password:${url}</p>`,user.email);
             console.log(user.email);
             return { username: response.username, email: response.email, _id: response._id };
         } catch (error) {
@@ -48,7 +52,7 @@ class UserService {
 
     async signIn(user){
         try {
-            const userExists = await this.userRepository.findBy({email: user.email});
+            const userExists = await this._userRepository.findBy({email: user.email});
             if(!userExists) {
                 throw new Error(`User ${user.email} does not exist`);
             }
@@ -57,7 +61,7 @@ class UserService {
             if (!passwordMatchs) {
                 throw new Error("Invalid credentials");
             }
-            const token = jwt.sign({user},JWT_SECRET,{expiresIn:'1d'});
+            const token = this.generateToken(user);
 
             return token;
         } catch (error) {
@@ -69,19 +73,37 @@ class UserService {
     async updatePassword(userId, newpassword) {
         try {
             console.log('The new passoword is:', newpassword);
-            const result = await this.userRepository.updateOne(userId, {password:newpassword});
-            
-            return result;
+            const result = await this._userRepository.updateOne(userId, {password:newpassword});
+            const plainResult = result.toObject();
+            delete plainResult.password;
+            return plainResult;
         } catch (error) {
             throw new Error(error.message);
         }
     }
 
+    async resetPassword(email) {
+        try {
+            const isUserExist = await this._userRepository.findBy({email:email});
+            if(!isUserExist) {
+                throw new Error(`${email} doesn't exists`) ;
+            }
+            const token = this.generateToken(isUserExist);
+            let url = `http://localhost:3001/reset-password?token=${token}`;
+            // send the link to reset the password in email
+            await sendEmail('Reset Password', `Click the following link to change your password ${url}</p>`,email);
+
+            return {'msg':'Check your email for a link to reset your password.'};
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
     async userInfo(userID) {
         try {
-            const userData = await this.userRepository.findBy({_id:userID});
-
-            return {_id: userData._id,username: userData.username,email: userData.email};
+            const result = await this._userRepository.findBy({_id:userID});
+            const plainResult = result.toObject();
+            delete plainResult.password;
+            return plainResult;
         } catch (error) {
             throw new Error(error.message);   
         }

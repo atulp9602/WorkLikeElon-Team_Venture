@@ -15,7 +15,7 @@ class CrudRepository {
     async updateOne(id,data) {
         try {
             const response = await this.model.findByIdAndUpdate(id,data,{ new: true,runValidators: true });
-            response.save();
+            
             return response;
         } catch (error) {
             throw error;
