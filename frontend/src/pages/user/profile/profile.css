@@ -1,0 +1,38 @@
+.user-profile-container {
+  height: calc(100vh - 56px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+}
+
+.user-profile-container .user-profile-box {
+  height: 80%;
+  padding: 10px;
+  max-width: 450px;
+  max-height: 550px;
+  width: 100%;
+}
+
+.user-profile-box .profile-pic {
+  flex: 0.3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.user-profile-box .user-info {
+  flex: 0.7;
+  list-style: none;
+  width: 100%;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.user-info li {
+  padding-left: 0px;
+  font-size: large;
+  font-weight: 900;
+}

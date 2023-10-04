@@ -17,7 +17,7 @@ const CreatePassword = () => {
     try {
       setIsResponseLoading(true);
       const response = await createPassword(token, values);
-      toast.success(response?.data?.message);
+      toast.success(response?.data?.data?.message);
       navigate("/authentication/login");
     } catch (error) {
       toast.error(error, { id: error });
@@ -39,7 +39,7 @@ const CreatePassword = () => {
           validationSchema={createPasswordValidationSchema}
           formConfig={createPasswordFormData}
           defaultValues={{
-            newpassword: "",
+            password: "",
           }}
           className="auth-forms"
           onSubmit={handleCreatePassword}

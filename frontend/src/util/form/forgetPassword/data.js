@@ -3,7 +3,7 @@ export const forgetPasswordFormData = [
     label: "Forget Password",
     fields: [
       {
-        name: "userName",
+        name: "email",
         label: "Username",
         type: "email",
       },

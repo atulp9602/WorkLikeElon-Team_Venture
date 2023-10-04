@@ -1,22 +1,22 @@
 import React, { useCallback, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
-
 import "./authStyle.css";
 
-import { useNavigate } from "react-router-dom";
 import DynamicForm from "../../components/reusable/DynamicForm";
-import { forgetPasswordValidationSchema } from "../../util/form/forgetPassword/validation";
-import { forgetPasswordFormData } from "../../util/form/forgetPassword/data";
-import { forgetPassword } from "../../services/auth";
+import { resetPasswordValidationSchema } from "../../util/form/resetPassword/validation";
+import { resetPasswordFormData } from "../../util/form/resetPassword/data";
+import { resetPassword } from "../../services/auth";
 
-const ForgetPassword = () => {
-  const navigate = useNavigate();
+const ResetPassword = () => {
   const [isResponseLoading, setIsResponseLoading] = useState(false);
+  const navigate = useNavigate();
+  const { token } = useParams();
 
-  const handleForgetPassword = useCallback(async (data) => {
-    setIsResponseLoading(true);
+  const handleResetPassword = useCallback(async (values) => {
     try {
-      const response = await forgetPassword(data);
+      setIsResponseLoading(true);
+      const response = await resetPassword(token, values);
       toast.success(response?.data?.message);
       navigate("/authentication/login");
     } catch (error) {
@@ -27,24 +27,24 @@ const ForgetPassword = () => {
   }, []);
 
   return (
-    <div className="main">
+    <div className="main dir_reverse">
       <div className="left">
         <img
-          src={require("../../assets/forgot_password.png")}
-          alt="forget password"
+          src={require("../../assets/create_new_password.png")}
+          alt="Reset Password"
         />
       </div>
       <div className="right">
         <DynamicForm
-          validationSchema={forgetPasswordValidationSchema}
-          formConfig={forgetPasswordFormData}
+          validationSchema={resetPasswordValidationSchema}
+          formConfig={resetPasswordFormData}
           defaultValues={{
-            email: "",
+            password: "",
           }}
-          isResponseLoading={isResponseLoading}
-          onSubmit={handleForgetPassword}
           className="auth-forms"
+          onSubmit={handleResetPassword}
           buttonClass="btn btn-warning"
+          isResponseLoading={isResponseLoading}
           style={{
             display: "flex",
             flexDirection: "column",
@@ -57,4 +57,4 @@ const ForgetPassword = () => {
   );
 };
 
-export default ForgetPassword;
+export default ResetPassword;

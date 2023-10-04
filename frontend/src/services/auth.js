@@ -2,7 +2,7 @@ import { axiosInstance } from "../config/http.config";
 
 const signup = async (data) => {
   try {
-    const response = await axiosInstance.post("/auth/signup", data);
+    const response = await axiosInstance.post("/signup", data);
     return response;
   } catch (error) {
     throw error;
@@ -11,7 +11,7 @@ const signup = async (data) => {
 
 const login = async (data) => {
   try {
-    const response = await axiosInstance.post("/auth/login", data);
+    const response = await axiosInstance.post("/signin", data);
     return response;
   } catch (error) {
     throw error;
@@ -20,7 +20,7 @@ const login = async (data) => {
 
 const forgetPassword = async (data) => {
   try {
-    const response = await axiosInstance.post("auth/forgetPassword", data);
+    const response = await axiosInstance.post("/forgot-password", data);
     return response;
   } catch (error) {
     throw error;
@@ -29,10 +29,7 @@ const forgetPassword = async (data) => {
 
 const createPassword = async (token, data) => {
   try {
-    const response = await axiosInstance.post(
-      `auth/forgetPasswordChange/${token}`,
-      data
-    );
+    const response = await axiosInstance.post(`/reset-password/${token}`, data);
     return response;
   } catch (error) {
     throw error;
@@ -41,10 +38,7 @@ const createPassword = async (token, data) => {
 
 const resetPassword = async (token, data) => {
   try {
-    const response = await axiosInstance.post(
-      `/auth/resetPassword/${token}`,
-      data
-    );
+    const response = await axiosInstance.post(`/reset-password/${token}`, data);
     return response;
   } catch (error) {
     throw error;

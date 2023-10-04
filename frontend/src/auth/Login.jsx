@@ -18,8 +18,8 @@ const Login = () => {
       setIsResponseLoading(true);
       // const response = await postRequest("/auth/login", loginData);
       const response = await login(loginData);
-      localStorage.setItem("token", response?.data?.token);
-      toast.success(response?.data?.message);
+      localStorage.setItem("token", response?.data?.data?.token);
+      // toast.success(response?.data?.data?.message, { id: response?.status });
       navigate("/dashboard/todo");
     } catch (error) {
       toast.error(error, { id: error });
@@ -37,12 +37,9 @@ const Login = () => {
         <DynamicForm
           validationSchema={loginValidationSchema}
           formConfig={loginFormData}
-          initialValues={{
-            email: "",
-            password: "",
-          }}
+          initialValues={{ userName: "klp@narola.email", password: "password" }}
           defaultValues={{
-            email: "",
+            userName: "",
             password: "",
           }}
           className="auth-forms"

@@ -17,7 +17,7 @@ const ForgetPassword = () => {
     setIsResponseLoading(true);
     try {
       const response = await forgetPassword(data);
-      toast.success(response?.data?.message);
+      toast.success(response?.data?.data?.message);
       navigate("/authentication/login");
     } catch (error) {
       toast.error(error, { id: error });
@@ -39,7 +39,7 @@ const ForgetPassword = () => {
           validationSchema={forgetPasswordValidationSchema}
           formConfig={forgetPasswordFormData}
           defaultValues={{
-            email: "",
+            userName: "",
           }}
           isResponseLoading={isResponseLoading}
           onSubmit={handleForgetPassword}

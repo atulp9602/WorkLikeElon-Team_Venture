@@ -8,31 +8,34 @@ import reportWebVitals from "./reportWebVitals";
 import "./index.css";
 
 import { AiOutlineClose } from "react-icons/ai";
+import UserProvider from "./context/user/UserProvider";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <BrowserRouter>
-    <App />
-    <Toaster>
-      {(t) => (
-        <ToastBar toast={t}>
-          {({ icon, message }) => (
-            <>
-              {icon}
-              {message}
-              {t.type !== "loading" && (
-                <button
-                  className="btn btn-sm btn-light"
-                  onClick={() => toast.dismiss(t.id)}
-                >
-                  <AiOutlineClose fontSize={18} color="red" />
-                </button>
-              )}
-            </>
-          )}
-        </ToastBar>
-      )}
-    </Toaster>
+    <UserProvider>
+      <App />
+      <Toaster>
+        {(t) => (
+          <ToastBar toast={t}>
+            {({ icon, message }) => (
+              <>
+                {icon}
+                {message}
+                {t.type !== "loading" && (
+                  <button
+                    className="btn btn-sm btn-light"
+                    onClick={() => toast.dismiss(t.id)}
+                  >
+                    <AiOutlineClose fontSize={18} color="red" />
+                  </button>
+                )}
+              </>
+            )}
+          </ToastBar>
+        )}
+      </Toaster>
+    </UserProvider>
   </BrowserRouter>
 );
 

@@ -3,7 +3,7 @@ export const loginFormData = [
     label: "Login",
     fields: [
       {
-        name: "userName",
+        name: "email",
         label: "Username",
         type: "email",
       },

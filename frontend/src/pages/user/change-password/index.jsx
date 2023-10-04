@@ -16,7 +16,7 @@ const ChangePassword = () => {
     try {
       setIsResponseLoading(true);
       const response = await changePassword(data);
-      toast.success(response?.data?.data?.message);
+      toast.success(response?.data?.message);
       localStorage.clear();
       navigate("/authentication/login");
     } catch (error) {
@@ -32,8 +32,8 @@ const ChangePassword = () => {
         validationSchema={changePasswordValidationSchema}
         formConfig={changePasswordFormData}
         defaultValues={{
-          password: "",
-          newPassword: "",
+          oldpassword: "",
+          newpassword: "",
         }}
         isResponseLoading={isResponseLoading}
         onSubmit={handleChangePassword}

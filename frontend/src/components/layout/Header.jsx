@@ -4,16 +4,18 @@ import { MdLogout } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
 import { FcTodoList } from "react-icons/fc";
 import { toast } from "react-hot-toast";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 
 import "./style.css";
 
 import { UserContext } from "../../context/user/UserProvider";
 import { RESET_USER } from "../../context/user/constant";
+import { setUserProfile } from "../../context/user/action";
 
 const Header = () => {
   const navigate = useNavigate();
   const {
+    state,
     state: { user },
     dispatch: userActionDispatch,
   } = useContext(UserContext);
@@ -26,6 +28,12 @@ const Header = () => {
     navigate("/authentication/login");
     toast.success("Logout Successfull !!");
   };
+
+  useEffect(() => {
+    if (user && !Object.keys(user).length) {
+      setUserProfile(userActionDispatch);
+    }
+  }, []);
 
   return (
     <nav className="navbar navbar-expand-lg bg-light variant-dark shadow-sm">
@@ -73,7 +81,7 @@ const Header = () => {
                 aria-expanded="false"
               >
                 <CgProfile fontSize={23} className="me-1" />
-                <span style={{ fontSize: "15px" }}>{user?.name}</span>
+                <span style={{ fontSize: "15px" }}>{user?.username}</span>
               </button>
               <ul
                 className="dropdown-menu dropdown-menu-end shadow-sm"

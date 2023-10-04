@@ -17,7 +17,7 @@ const Signup = () => {
     try {
       setIsResponseLoading(true);
       const response = await signup(signupData);
-      toast.success(response?.data?.message);
+      toast.success(response?.data?.data?.message);
       navigate("/authentication/login");
     } catch (error) {
       toast.error(error, { id: error });
@@ -27,9 +27,9 @@ const Signup = () => {
   }, []);
 
   const defaultValues = {
-    username: "",
-    email: "",
-    contactno: "",
+    name: "",
+    userName: "",
+    contactNo: "",
   };
 
   return (

@@ -3,12 +3,12 @@ export const changePasswordFormData = [
     label: "Change Password",
     fields: [
       {
-        name: "password",
+        name: "oldpassword",
         label: "Old Password",
         type: "password",
       },
       {
-        name: "newPassword",
+        name: "newpassword",
         label: "New Password",
         type: "password",
       },

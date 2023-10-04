@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://192.168.100.07:5002/";
+const BASE_URL = "http://localhost:5000/api";
 
 export const axiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -14,7 +14,8 @@ const getAuthToken = () => localStorage.getItem("token");
 const attachAuthToken = (config) => {
   const token = getAuthToken();
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+    // config.headers.Authorization = `Bearer ${token}`;
+    config.headers.Authorization = `${token}`;
   }
   return config;
 };
@@ -37,7 +38,7 @@ const handleError = (error) => {
       error?.response?.data?.message ??
       error?.toString() ??
       "Something Went Wrong";
-    if (error?.response?.status > 400) {
+    if (error?.response?.status === 401) {
       localStorage.clear();
       window.location.replace("/authentication/login");
     }

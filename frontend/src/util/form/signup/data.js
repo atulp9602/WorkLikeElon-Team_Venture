@@ -3,17 +3,17 @@ export const signupFormData = [
     label: "Signup",
     fields: [
       {
-        name: "name",
+        name: "username",
         label: "Name",
         type: "text",
       },
       {
-        name: "userName",
+        name: "email",
         label: "Username",
         type: "email",
       },
       {
-        name: "contactNo",
+        name: "contactno",
         label: "Contact No",
         type: "number",
       },
