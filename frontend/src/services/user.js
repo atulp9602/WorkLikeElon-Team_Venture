@@ -8,6 +8,16 @@ const fetchLoggedUserDetail = async () => {
     throw error;
   }
 };
+
+const updateUserDetail = async (data) => {
+  try {
+    const response = await axiosInstance.patch(`/update-profile`, data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const changePassword = async (data) => {
   try {
     const response = await axiosInstance.patch("/change-password", data);
@@ -17,4 +27,4 @@ const changePassword = async (data) => {
   }
 };
 
-export { changePassword, fetchLoggedUserDetail };
+export { changePassword, fetchLoggedUserDetail, updateUserDetail };

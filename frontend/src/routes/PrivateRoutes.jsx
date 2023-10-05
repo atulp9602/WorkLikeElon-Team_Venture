@@ -3,7 +3,7 @@ import { Route, Routes, Navigate, Outlet } from "react-router-dom";
 
 import Header from "../components/layout/Header";
 
-const Home = lazy(() => import("../pages/todo"));
+const Home = lazy(() => import("../pages/dashboard"));
 const Profile = lazy(() => import("../pages/user/profile"));
 const ChangePassword = lazy(() => import("../pages/user/change-password"));
 const PageNotFound = lazy(() => import("../pages/PageNotFound"));

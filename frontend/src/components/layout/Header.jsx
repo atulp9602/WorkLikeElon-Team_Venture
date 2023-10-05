@@ -1,5 +1,4 @@
 import { Link, useNavigate } from "react-router-dom";
-import { AiOutlineHome } from "react-icons/ai";
 import { MdLogout } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
 import { FcTodoList } from "react-icons/fc";
@@ -15,8 +14,7 @@ import { setUserProfile } from "../../context/user/action";
 const Header = () => {
   const navigate = useNavigate();
   const {
-    state,
-    state: { user },
+    state: { user, loading },
     dispatch: userActionDispatch,
   } = useContext(UserContext);
 
@@ -62,16 +60,6 @@ const Header = () => {
 
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
           <ul className="navbar-nav ms-auto mb-2 mb-lg-0 gap-2">
-            <li className="nav-item">
-              <Link
-                to="/dashboard/todo"
-                className="nav-link active d-flex align-items-center"
-                aria-current="page"
-              >
-                <AiOutlineHome fontSize={20} className="me-1" />
-                <span>Home</span>
-              </Link>
-            </li>
             <li className="nav-item dropdown-center position-relative">
               <button
                 className="btn border-0 bg-transparent dropdown-toggle px-0"
@@ -81,7 +69,9 @@ const Header = () => {
                 aria-expanded="false"
               >
                 <CgProfile fontSize={23} className="me-1" />
-                <span style={{ fontSize: "15px" }}>{user?.username}</span>
+                <span style={{ fontSize: "15px" }}>
+                  {loading ? "Loading..." : user?.username}
+                </span>
               </button>
               <ul
                 className="dropdown-menu dropdown-menu-end shadow-sm"

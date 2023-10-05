@@ -1,3 +1,8 @@
+.sidebar-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
 .dropdown-menu {
   top: 46px !important;
 }
