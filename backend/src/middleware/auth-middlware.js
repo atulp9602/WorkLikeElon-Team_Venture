@@ -9,7 +9,7 @@ const validateProtectedRoute = async (req, res, next) => {
       token = req.params.token;
     }
     if (!token) {
-      return res.status(401).json({ error: "Token is missing" });
+      return res.status(401).json({ message: "Token is missing" });
     }
     const verifyToken = jwt.verify(token, JWT_SECRET);
     if (!verifyToken) {
@@ -18,14 +18,14 @@ const validateProtectedRoute = async (req, res, next) => {
     const userRepo = new UserRepository();
     const user = await userRepo.findBy({ email: verifyToken.user.email });
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ message: "User not found" });
     }
     console.log(user);
     req.user = user;
     next();
   } catch (error) {
     console.log("Error in protected route", error);
-    return res.status(500).json({ error: `Server Error ${error}` });
+    return res.status(500).json({ message: `Server Error ${error}` });
   }
 };
 
@@ -53,7 +53,7 @@ const checkCredentials = (req, res, next) => {
     case `/reset-password/${token}`: {
       const { newpassword } = { ...req.body };
       if (!newpassword) {
-        return res.status(400).json({ error: "Password is required" });
+        return res.status(400).json({ message: "Password is required" });
       }
       if (!passwordValidator(newpassword)) {
         return res.status(400).json({
@@ -78,13 +78,25 @@ const checkCredentials = (req, res, next) => {
       }
       break;
     }
+
+    case `/update-profile`:{
+      const {username,contactno} = {...req.body};
+      if(!username && !contactno) {
+        return res.status(400).json({message:'Username or Contact No cannot be empty'});
+      }
+      if(contactno) {
+        if(!contactnoValidator(contactno))
+          return res.status(400).json({error:"Invalid Phone Number"});
+      }
+      break;
+    }
     case "/forgot-password": {
       const { email } = { ...req.body };
       if (!email) {
-        return res.status(400).json({ error: "Email is required" });
+        return res.status(400).json({ message: "Email is required" });
       }
       if (!emailValidator(email)) {
-        return res.status(400).json({ error: "Please enter a valid Email" });
+        return res.status(400).json({ message: "Please enter a valid Email" });
       }
       break;
     }
@@ -100,7 +112,7 @@ const checkCredentials = (req, res, next) => {
           .status(400)
           .json({ error: "Please enter a valid Email Id." });
       } else if (!passwordValidator(password)) {
-        return res.status(400).json({ error: "Invalid password format" });
+        return res.status(400).json({ message: "Invalid password format" });
       }
       break;
     }
@@ -112,9 +124,9 @@ const checkCredentials = (req, res, next) => {
           .json({ error: "Email, contactno or username is required" });
       }
       if (!emailValidator(email)) {
-        return res.status(400).json({ error: "Enter Valid email" });
+        return res.status(400).json({ message: "Enter Valid email" });
       } else if (!contactnoValidator(contactno)) {
-        return res.status(400).json({ error: "Enter Valid mobile number" });
+        return res.status(400).json({ message: "Enter Valid mobile number" });
       }
       break;
     }

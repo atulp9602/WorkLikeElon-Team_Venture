@@ -5,6 +5,7 @@ const {
   userInfo,
   updatePassword,
   resetPassword,
+  updateUserProfile
 } = require("../controller/user-controller");
 const {
   validateProtectedRoute,
@@ -28,6 +29,7 @@ router.patch(
   validateProtectedRoute,
   updatePassword
 );
+router.patch("user/update-profile",checkCredentials,validateProtectedRoute, updateUserProfile);
 router.get("/user/me", validateProtectedRoute, userInfo);
 
 module.exports = router;
