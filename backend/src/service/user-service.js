@@ -106,6 +106,20 @@ class UserService {
             throw new Error(error.message);
         }
     }
+
+    async updateUserProfile(id,user){
+        try {
+            const updatedUser=await this._userRepository.updateOne(id,{...user});
+            if(!updatedUser) {
+                throw new Error('User not found');
+            }
+            const plainUser = updatedUser.toObject();
+            delete plainUser.password;
+            return plainUser;
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }    
     async userInfo(userID) {
         try {
             const result = await this._userRepository.findBy({_id:userID});
@@ -116,6 +130,7 @@ class UserService {
             throw new Error(error.message);   
         }
     }
+
 }
 
 module.exports = UserService;
