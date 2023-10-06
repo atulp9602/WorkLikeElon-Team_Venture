@@ -72,6 +72,30 @@ module.exports = {
         }
     },
 
+    async findTodoWithGroup(req,res) {
+        try {
+            let filter = {
+                _id : req.params.groupId,
+                userId:req.user.id
+            }
+            const response = await groupService.findGroupWithTodo(filter);
+
+            return res.status(200).json({
+                success:true,
+                data:response,
+                message: 'Sucessfully get all todos',
+                error:{},
+            })
+        } catch (error) {
+            return res.status(500).json({
+                success:false,
+                data:{},
+                message: error.message,
+                error,
+            })
+        }
+    },
+
     async deleteGroup(req,res){
         try {
             const userId = req.user.id;
