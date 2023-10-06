@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema({
     contactno:{
         type : Number,
     }
-});
+},{timestamps: true});
 
 userSchema.pre('save',function (next) {
     const user = this;

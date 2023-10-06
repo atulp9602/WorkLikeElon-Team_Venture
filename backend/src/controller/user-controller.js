@@ -95,6 +95,27 @@ module.exports = {
     }
   },
 
+  async updateUserProfile(req, res) {
+    try {
+      const {username,contactno} = {...req.body};
+      const userId = req.user.id;
+      const response = await userService.updateUserProfile(userId,{username, contactno});
+      return res.status(200).json({
+        success:true,
+        data:response,
+        message:"Profile Updated Successfully!",
+        error:{},
+      });
+    } catch (error) {
+      return res.status(500).json({
+        status:false,
+        data:{},
+        message:error.message,
+        error:error,
+      })
+    }
+  },
+
   async userInfo(req, res) {
     try {
       const userId = req.user.id;
