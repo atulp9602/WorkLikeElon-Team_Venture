@@ -58,8 +58,8 @@
 .todolist form {
   justify-self: center;
 }
+
 .filter-div .btns {
-  width: 100%;
   display: flex;
   justify-content: flex-end;
 }

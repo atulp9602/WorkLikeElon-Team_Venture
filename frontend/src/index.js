@@ -9,33 +9,36 @@ import "./index.css";
 
 import { AiOutlineClose } from "react-icons/ai";
 import UserProvider from "./context/user/UserProvider";
+import GroupsProvider from "./context/groups/GroupsProvider";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <BrowserRouter>
-    <UserProvider>
-      <App />
-      <Toaster>
-        {(t) => (
-          <ToastBar toast={t}>
-            {({ icon, message }) => (
-              <>
-                {icon}
-                {message}
-                {t.type !== "loading" && (
-                  <button
-                    className="btn btn-sm btn-light"
-                    onClick={() => toast.dismiss(t.id)}
-                  >
-                    <AiOutlineClose fontSize={18} color="red" />
-                  </button>
-                )}
-              </>
-            )}
-          </ToastBar>
-        )}
-      </Toaster>
-    </UserProvider>
+    <GroupsProvider>
+      <UserProvider>
+        <App />
+        <Toaster>
+          {(t) => (
+            <ToastBar toast={t}>
+              {({ icon, message }) => (
+                <>
+                  {icon}
+                  {message}
+                  {t.type !== "loading" && (
+                    <button
+                      className="btn btn-sm btn-light"
+                      onClick={() => toast.dismiss(t.id)}
+                    >
+                      <AiOutlineClose fontSize={18} color="red" />
+                    </button>
+                  )}
+                </>
+              )}
+            </ToastBar>
+          )}
+        </Toaster>
+      </UserProvider>
+    </GroupsProvider>
   </BrowserRouter>
 );
 

@@ -7,7 +7,7 @@ const Select = ({ currentValue, onChangeHandler, options }) => {
       aria-label="Default select example"
       size="sm"
       value={currentValue}
-      className="w-25"
+      className="w-25 p-2 "
       onChange={(e) => onChangeHandler(e.target.value)}>
       {Array.isArray(options) &&
         options.map((item) => (
