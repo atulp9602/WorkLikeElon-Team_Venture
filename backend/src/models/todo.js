@@ -14,6 +14,10 @@ const todoSchema = new mongoose.Schema({
         enum: ['todo','in-progress','completed'],
         default:'todo',
     },
+    assignDueDate: {
+        type : Date,
+        required: true,
+    },
     groupId :{
         type: mongoose.Schema.Types.ObjectId,
         ref:'Group',
