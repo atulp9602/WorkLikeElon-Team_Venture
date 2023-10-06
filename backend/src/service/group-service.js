@@ -31,7 +31,18 @@ class GroupService {
 
     async findGroup(filter){
         try {
-            const group = await this._groupRepository.findAll(filter);
+            const group = await this._groupRepository.findGroup(filter);
+
+            return group;
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
+
+    async findGroupWithTodo(filter) {
+        try {
+            console.log(filter);
+            const group = await this._groupRepository.findGroup(filter);
 
             return group;
         } catch (error) {

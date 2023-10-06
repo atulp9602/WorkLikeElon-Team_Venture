@@ -4,8 +4,13 @@ const Todo = require('./todo');
 const groupSchema = new mongoose.Schema({
     name: {
         type: String, 
-        required: true 
+        required: true,
+        require:true,
     },
+    todos: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'Todo'
+    }],
     userId: {
         type : mongoose.Schema.Types.ObjectId,
         ref:'User',
