@@ -50,14 +50,29 @@ module.exports = {
         try {
             let filter = {
                 userId:req.user.id,
+                // ...req.body,
             }
+            if(filter.createdAt){
+                const dateParts = filter.createdAt.split('-');
+                const day = parseInt(dateParts[0], 10);
+                const month = parseInt(dateParts[1], 10) - 1; // Months are zero-indexed
+                const year = parseInt(dateParts[2], 10);
+
+                if (isNaN(day) || isNaN(month) || isNaN(year)) {
+                throw new Error('Invalid date format');
+                }
+
+                const dateToFind = new Date(year, month, day);
+                const nextDay = new Date(year, month, day + 1);
+                filter.createdAt = { $gte: dateToFind, $lt: nextDay};
+            }
+            // new Date(req.body.createdAt).toISOString();
             if(req.body.groupId) {
                 filter.groupId = req.body.groupId;
             }
             if(req.body.status) {
                 filter.status = req.body.status;
             }
-            const userId=req.user.id;
             const todo = await todoService.findTodo(filter);
 
             return res.status(200).json({

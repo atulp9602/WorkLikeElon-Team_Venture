@@ -9,11 +9,18 @@ class TodoService {
 
     async addTodoItem(todoItems,userId) {
         try {
+            const [hours,minutes] = todoItems.estimatedTime.split(':').map(Number);
+            delete todoItems.estimatedTime;
+
             const group = await this._groupRepository.findBy({_id:todoItems.groupId});
             if(!group) {
                 throw new Error('No such group found');
             }
-            const todo = await this._todoRepository.createOne({...todoItems,userId});
+            const todo = await this._todoRepository.createOne({
+                ...todoItems,
+                userId,
+                estimatedTime: { hours, minutes } // Add estimatedTime
+            });
             group.todos.push(todo._id);
             group.save();
 
