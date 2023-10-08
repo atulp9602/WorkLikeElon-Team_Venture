@@ -21,9 +21,9 @@ export const getCreateTodoFormData = (options) => {
           textareaRows: 2,
         },
         {
-          name: "assignDueDate",
-          label: "Due Date",
-          type: "date",
+          name: "estimatedTime",
+          label: "Estimated Time (Minutes)",
+          type: "number",
         },
       ],
     },

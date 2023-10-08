@@ -1,8 +1,10 @@
 import { axiosInstance } from "../config/http.config";
 
-const fetchGroupWiseUserTodoList = async (groupId) => {
+const fetchGroupWiseUserTodoList = async (groupId, signal) => {
   try {
-    const response = await axiosInstance.get(`/groups/${groupId}`);
+    const response = await axiosInstance.get(`/groups/${groupId}`, {
+      signal,
+    });
     return response;
   } catch (error) {
     throw error;

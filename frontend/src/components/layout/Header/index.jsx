@@ -5,11 +5,11 @@ import { FcTodoList } from "react-icons/fc";
 import { toast } from "react-hot-toast";
 import React, { useContext, useEffect } from "react";
 
-import "./style.css";
+import "./header.css";
 
-import { UserContext } from "../../context/user/UserProvider";
-import { RESET_USER } from "../../context/user/constant";
-import { setUserProfile } from "../../context/user/action";
+import { UserContext } from "../../../context/user/UserProvider";
+import { RESET_USER } from "../../../context/user/constant";
+import { setUserProfile } from "../../../context/user/action";
 
 const Header = () => {
   const navigate = useNavigate();

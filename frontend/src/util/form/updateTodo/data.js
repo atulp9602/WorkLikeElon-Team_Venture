@@ -14,9 +14,9 @@ export const updateTodoFormData = [
         textareaRows: 2,
       },
       {
-        name: "assignDueDate",
-        label: "Due Date",
-        type: "date",
+        name: "estimatedTime",
+        label: "Estimated Time (Minutes)",
+        type: "number",
       },
       {
         name: "status",

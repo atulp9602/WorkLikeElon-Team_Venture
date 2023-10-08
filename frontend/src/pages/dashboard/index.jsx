@@ -6,8 +6,8 @@ import React, {
   useState,
 } from "react";
 import { toast } from "react-hot-toast";
-import { AiOutlinePlus } from "react-icons/ai";
-import { Col, Row } from "react-bootstrap";
+import { AiOutlinePlus, AiOutlineMenuUnfold } from "react-icons/ai";
+import { Col, Offcanvas, Row } from "react-bootstrap";
 import moment from "moment/moment";
 import { useMediaQuery } from "@uidotdev/usehooks";
 
@@ -20,7 +20,7 @@ import { setGroups } from "../../context/groups/action";
 import useModal from "../../hooks/useModal";
 import { getCreateTodoFormData } from "../../util/form/createTodo/data";
 import { createTodoFormValidationSchema } from "../../util/form/createTodo/validation";
-import Sidebar from "../../components/layout/Sidebar";
+import Sidebar from "../../components/layout/Sidebar_Content";
 import {
   ListGridViewSwitch,
   TodosDND,
@@ -33,7 +33,6 @@ import {
   ConfirmDialog,
   DetailModal,
   FormModal,
-  Select,
 } from "../../components/reusable";
 import {
   statusSelectionOptions,
@@ -49,6 +48,8 @@ import {
   updateTodoSequence,
 } from "../../services/todo";
 import { createGroup } from "../../services/group";
+import CustomSelect from "../../container/CustomSelect";
+import CustomDatePicker from "../../container/CustomDatePicker";
 
 const Home = () => {
   const {
@@ -65,6 +66,13 @@ const Home = () => {
   const [groupInput, setGroupInput] = useState("");
   const [selectedTodoStatus, setSelectedTodoStatus] = useState("");
   const [listView, setListView] = useState(true);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [showSidebar, setShowSidebar] = useState(false);
+
+  const handleSidebarToggle = () => {
+    setShowSidebar(!showSidebar);
+  };
+
   const isSmallDevice = useMediaQuery("only screen and (max-width : 768px)");
 
   const updateTodoModal = useModal();
@@ -80,10 +88,6 @@ const Home = () => {
       });
     }
   }, [isSmallDevice]);
-
-  useEffect(() => {
-    selectedGroupOption?.id && getGroupWiseUserTodoList();
-  }, [listView, selectedGroupOption]);
 
   const statusWiseUserTodos = useMemo(() => {
     if (Array.isArray(userTodoList)) {
@@ -142,7 +146,10 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    !!selectedGroupOption?.id && getGroupWiseUserTodoList();
+    const controller = new AbortController();
+    !!selectedGroupOption?.id && getGroupWiseUserTodoList(controller.signal);
+
+    return () => controller.abort();
   }, [selectedGroupOption?.id]);
 
   useEffect(() => {
@@ -153,11 +160,12 @@ const Home = () => {
     !!selectedGroupOption?.id && getStatuswiseTodos(selectedTodoStatus);
   }, [selectedTodoStatus]);
 
-  const getGroupWiseUserTodoList = async () => {
+  const getGroupWiseUserTodoList = async (signal) => {
     setIsFetchTodosResponseLoading(true);
     try {
       const response = await fetchGroupWiseUserTodoList(
-        selectedGroupOption?.id
+        selectedGroupOption?.id,
+        signal
       );
       setUserTodoList(response?.data?.data[0]?.todos || []);
       setTodayOption(0);
@@ -322,7 +330,7 @@ const Home = () => {
   return (
     <div className="parent">
       <Row className="container-fluid">
-        <Col sm={3} className="sidebar">
+        <Col md={3} className="sidebar d-none d-md-block">
           <Sidebar
             groups={groups}
             selectedGroupOption={selectedGroupOption}
@@ -333,8 +341,16 @@ const Home = () => {
             groupInput={groupInput}
           />
         </Col>
-        <Col sm={9} className="todo-container">
+        <Col md={9} sm={12} className="todo-container">
           <div className="todo-input">
+            <button
+              type="button"
+              variant="info"
+              className="btn shadow-lg d-md-none bg-transparent"
+              onClick={handleSidebarToggle}
+            >
+              <AiOutlineMenuUnfold fontSize={20} />
+            </button>
             <p className="fw-2 fs-5 m-0">
               {selectedGroupOption?.title ?? "No Group Selected"}
             </p>
@@ -351,19 +367,17 @@ const Home = () => {
           </div>
           <div className="todolist">
             <div className="filter-div">
-              <div className="d-flex gap-2 flex-grow-1 justify-content-center">
-                <Select
-                  currentValue={todayOption}
-                  onChangeHandler={setTodayOption}
-                  options={todayAllSelectionOptions}
+              <div className="d-flex gap-2 flex-grow-1">
+                <CustomDatePicker
+                  selectedDate={selectedDate}
+                  onChange={(date) => setSelectedDate(date)}
                 />
-                <Select
+                <CustomSelect
                   currentValue={selectedTodoStatus}
-                  onChangeHandler={setSelectedTodoStatus}
+                  onChangeHandler={(e) => setSelectedTodoStatus(e.target.value)}
                   options={statusSelectionOptions}
                 />
               </div>
-
               <ListGridViewSwitch
                 listView={listView}
                 handleSetListView={handleSetListView}
@@ -394,6 +408,29 @@ const Home = () => {
             )}
           </div>
         </Col>
+        <Offcanvas
+          show={showSidebar}
+          onHide={() => setShowSidebar(false)}
+          placement="start"
+          style={{
+            width: "350px",
+          }}
+        >
+          <Offcanvas.Header closeButton>
+            <Offcanvas.Title>Groups</Offcanvas.Title>
+          </Offcanvas.Header>
+          <Offcanvas.Body>
+            <Sidebar
+              groups={groups}
+              selectedGroupOption={selectedGroupOption}
+              setSelectedGroupOption={setSelectedGroupOption}
+              isCreateGroupResponseLoading={isCreateGroupResponseLoading}
+              handleCreateGroup={handleCreateGroup}
+              setGroupInput={setGroupInput}
+              groupInput={groupInput}
+            />
+          </Offcanvas.Body>
+        </Offcanvas>
       </Row>
       <FormModal
         isOpen={createTodoModal.isOpen}
@@ -402,7 +439,6 @@ const Home = () => {
         formConfig={getCreateTodoFormData(groupOptions)}
         formInitialValues={{
           groupId: selectedGroupOption ? selectedGroupOption?.id : "",
-          assignDueDate: moment().format("YYYY-MM-DD 12:00:00"),
         }}
         formValidationSchema={createTodoFormValidationSchema}
         isResponseLoading={isCreateTodoResponseLoading}
@@ -412,16 +448,11 @@ const Home = () => {
       <FormModal
         isOpen={updateTodoModal.isOpen}
         handleCloseModal={updateTodoModal.closeModal}
+        formInitialValues={{ ...todoToBeUpdated }}
         modalTitle="Update Todo"
         formConfig={updateTodoFormData}
         formValidationSchema={todoUpdateFormValidationSchema}
         isResponseLoading={isUpdateTodoResponseLoading}
-        formInitialValues={{
-          ...todoToBeUpdated,
-          assignDueDate: moment(todoToBeUpdated?.assignDueDate).format(
-            "YYYY-MM-DD"
-          ),
-        }}
         handleSubmit={handleUpdateTodo}
         buttonLabel="Update"
       />
@@ -433,7 +464,7 @@ const Home = () => {
         <h5 className="text-center">{todoToShow?.title}</h5>
         <p>Notes : {todoToShow?.description}</p>
         <p>Status : {todoToShow?.status}</p>
-        <p>Due Date : {new Date(todoToShow?.assignDueDate).toLocaleString()}</p>
+        <p>Estimated Time : {todoToShow?.estimatedTime}</p>
         <p>Created At : {new Date(todoToShow?.createdAt).toLocaleString()}</p>
         <p>
           Last updated At : {new Date(todoToShow?.updatedAt).toLocaleString()}

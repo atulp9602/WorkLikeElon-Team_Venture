@@ -5,20 +5,10 @@ const TodoList = ({ userTodoList, renderSingleTodo }) => {
     <ul>
       {Array.isArray(userTodoList) && userTodoList.length > 0 ? (
         userTodoList
-          .sort((a, b) => new Date(b.assignDueDate) - new Date(a.assignDueDate))
-          .map((todo) => (
-            <li
-              key={todo?._id}
-              className={` ${
-                new Date(todo?.assignDueDate).getTime() === new Date().getTime()
-                  ? "bg-danger-subtle"
-                  : "bg-light"
-              }`}>
-              {renderSingleTodo(todo)}
-            </li>
-          ))
+          .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+          .map((todo) => <li key={todo?._id}>{renderSingleTodo(todo)}</li>)
       ) : (
-        <h4 className="text-center text-secondary">No Todos !!</h4>
+        <h4 className="text-center text-secondary my-auto">No Todos !!</h4>
       )}
     </ul>
   );

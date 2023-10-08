@@ -1,24 +1,17 @@
 import React, { useCallback, useContext, useState } from "react";
-import {
-  Button,
-  ButtonGroup,
-  Form,
-  InputGroup,
-  ListGroup,
-  Spinner,
-} from "react-bootstrap";
+import { Button, Form, InputGroup, ListGroup, Spinner } from "react-bootstrap";
 import { BiEdit } from "react-icons/bi";
 import { AiFillDelete } from "react-icons/ai";
 
-import "./style.css";
-import useModal from "../../hooks/useModal";
-import { deleteGroup, updateGroup } from "../../services/group";
+import "./sidebar.css";
+import useModal from "../../../hooks/useModal";
+import { deleteGroup, updateGroup } from "../../../services/group";
 import toast from "react-hot-toast";
-import { DELETE_GROUP, UPDATE_GROUP } from "../../context/groups/constant";
-import { GroupsContext } from "../../context/groups/GroupsProvider";
-import { ConfirmDialog, FormModal } from "../reusable";
-import { updateGroupFormData } from "./../../util/form/updateGroup/data";
-import { updateGroupFormValidationSchema } from "./../../util/form/updateGroup/validation";
+import { DELETE_GROUP, UPDATE_GROUP } from "../../../context/groups/constant";
+import { GroupsContext } from "../../../context/groups/GroupsProvider";
+import { ConfirmDialog, FormModal } from "../../reusable";
+import { updateGroupFormData } from "../../../util/form/updateGroup/data";
+import { updateGroupFormValidationSchema } from "../../../util/form/updateGroup/validation";
 
 const Sidebar = ({
   groups,
@@ -80,36 +73,39 @@ const Sidebar = ({
     },
     [groupIdToBeDeleted]
   );
+
   return (
     <div className="sidebar-content">
-      <h5 className="mb-3 text-center">Groups</h5>
-      {Array.isArray(groups) && groups.length > 0 ? (
-        <ListGroup className="scroll-auto display">
-          {groups.map((group) => (
-            <ListGroup.Item
-              className="py-2 my-1 rounded-2"
-              key={group?._id}
-              active={selectedGroupOption?.id === group?._id}
-              onClick={() =>
-                setSelectedGroupOption({
-                  id: group?._id,
-                  title: group?.name,
-                })
-              }
-            >
-              <div className="d-flex justify-content-between align-items-center ">
-                <img
-                  src={require("../../assets/to-do-list.png")}
-                  height={"25px"}
-                  width={"25px"}
-                  className="object-fit-cover me-2"
-                />
-                <h6 className="text-black-black justify-content-start flex-grow-1 my-auto">
-                  {group?.name}
-                </h6>
-                <div className="">
+      <h5 className="mb-3 text-center d-none d-md-block">Groups</h5>
+      <div className="scrollable-list">
+        <ListGroup className="display">
+          {Array.isArray(groups) && groups.length > 0 ? (
+            groups.map((group) => (
+              <ListGroup.Item
+                key={group?._id}
+                active={selectedGroupOption?.id === group?._id}
+                onClick={() => {
+                  setSelectedGroupOption({
+                    id: group?._id,
+                    title: group?.name,
+                  });
+                }}
+                action={true}
+                className="d-flex justify-content-between align-items-center mb-2 list-item"
+              >
+                <div className="d-flex align-items-center">
+                  <img
+                    src={require("../../../assets/to-do-list.png")}
+                    height={"25px"}
+                    width={"25px"}
+                    className="object-fit-cover me-2"
+                    alt="icon"
+                  />
+                  <h6 className="text-black-black my-auto">{group?.name}</h6>
+                </div>
+                <div className="d-flex">
                   <button
-                    className="btn bg-transparent text-primary fw-bold"
+                    className="btn bg-transparent text-primary fw-bold me-2"
                     onClick={(e) => {
                       e.stopPropagation();
                       setGroupToBeBeUpdated(group);
@@ -129,14 +125,14 @@ const Sidebar = ({
                     <AiFillDelete fontSize={20} />
                   </button>
                 </div>
-              </div>
-            </ListGroup.Item>
-          ))}
+              </ListGroup.Item>
+            ))
+          ) : (
+            <h4 className="text-secondary my-auto text-center">No Groups !!</h4>
+          )}
         </ListGroup>
-      ) : (
-        <h4 className="text-secondary">No Groups !!</h4>
-      )}
-      <InputGroup className="mt-3">
+      </div>
+      <InputGroup className="mt-3 position-absolute bottom-0">
         <Form.Control
           placeholder="Enter New Group"
           aria-label="group's name"

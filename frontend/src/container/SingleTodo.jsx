@@ -31,7 +31,8 @@ const SingleTodo = ({
         <span
           className={` ${
             todo?.status === "completed" ? "text-decoration-line-through" : ""
-          }`}>
+          }`}
+        >
           {todo?.title}
         </span>
         {isListView && (
@@ -42,19 +43,11 @@ const SingleTodo = ({
                 : todo?.status === "todo"
                 ? "bg-secondary"
                 : "bg-warning"
-            } text-light m-1 justify-self-center`}>
+            } text-light justify-self-center ms-2`}
+          >
             {todo?.status}
           </span>
         )}
-
-        {todo?.status !== "completed" &&
-          handleCheckIsTodoMissed(todo?.assignDueDate) && (
-            <span
-              className={"text-danger m-2 justify-self-center"}
-              style={{ fontSize: "14px" }}>
-              Missed
-            </span>
-          )}
       </div>
       <div className="btns">
         {isListView && (
@@ -64,7 +57,8 @@ const SingleTodo = ({
               onClick={() => {
                 setTodoToShow(todo);
                 todoDetailModal.openModal();
-              }}>
+              }}
+            >
               <GrView fontSize={20} />
             </button>
             <button
@@ -72,7 +66,8 @@ const SingleTodo = ({
               onClick={() => {
                 setTodoToBeUpdated(todo);
                 updateTodoModal.openModal();
-              }}>
+              }}
+            >
               <BiEdit fontSize={20} />
             </button>
             <button
@@ -80,15 +75,12 @@ const SingleTodo = ({
               onClick={() => {
                 setTodoIdToBeDeleted(todo?._id);
                 confirmModal.openModal();
-              }}>
+              }}
+            >
               <AiFillDelete fontSize={20} />
             </button>
           </div>
         )}
-        <small className="text-muted align-self-center ms-2">
-          <MdOutlineUpdate fontSize={20} className="me-1" />
-          {moment(new Date(todo?.assignDueDate)).format("DD-MM-YYYY")}
-        </small>
       </div>
     </>
   );
