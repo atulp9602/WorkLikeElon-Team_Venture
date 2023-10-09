@@ -43,12 +43,14 @@ const handleError = (error) => {
       window.location.replace("/authentication/login");
     }
   } else {
-    if (navigator.onLine) {
+    if (error.code === "ERR_CANCELED") {
+      return;
+    } else if (navigator.onLine) {
       errorMessage = "Server Not Responding !! Try Again after some time ";
     } else {
       errorMessage = "Please, Check Network Connection !!";
     }
-  }
+  } 
   return Promise.reject(errorMessage);
 };
 

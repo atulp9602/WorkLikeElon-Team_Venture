@@ -11,18 +11,6 @@ const fetchGroupWiseUserTodoList = async (groupId, signal) => {
   }
 };
 
-const fetchCurrentDateLoggedUserGroupWiseTodos = async (data) => {
-  try {
-    const response = await axiosInstance.post(
-      "/todos/groupWiseCurrentDateData",
-      data
-    );
-    return response;
-  } catch (error) {
-    throw error;
-  }
-};
-
 const createTodo = async (data) => {
   try {
     const response = await axiosInstance.post("/todos/create", data);
@@ -50,28 +38,19 @@ const deleteTodo = async (todoId) => {
   }
 };
 
-const fetchStatusWiseTodos = async (data) => {
+const filterLoggedUserTodos = async (data) => {
   try {
-    const response = await axiosInstance.post("/todos/statusWiseTodo", data);
+    const response = await axiosInstance.post("/todos/", data);
     return response;
   } catch (error) {
     throw error;
   }
 };
 
-const fetchCurrentDateLoggedUserAllGroupsTodos = async () => {
+const updateTodoSequence = async (todoId, data) => {
   try {
-    const response = await axiosInstance.post("/todos/currentDateData");
-    return response;
-  } catch (error) {
-    throw error;
-  }
-};
-
-const updateTodoSequence = async (data) => {
-  try {
-    const response = await axiosInstance.post(
-      "/todos/todoSequenceChange",
+    const response = await axiosInstance.patch(
+      `todos/updateOrder/${todoId}`,
       data
     );
     return response;
@@ -82,11 +61,9 @@ const updateTodoSequence = async (data) => {
 
 export {
   fetchGroupWiseUserTodoList,
-  fetchCurrentDateLoggedUserAllGroupsTodos,
-  fetchCurrentDateLoggedUserGroupWiseTodos,
+  filterLoggedUserTodos,
   createTodo,
   updateTodo,
   deleteTodo,
-  fetchStatusWiseTodos,
   updateTodoSequence,
 };

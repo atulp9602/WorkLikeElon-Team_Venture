@@ -3,7 +3,7 @@ import { Button, Form, InputGroup, ListGroup, Spinner } from "react-bootstrap";
 import { BiEdit } from "react-icons/bi";
 import { AiFillDelete } from "react-icons/ai";
 
-import "./sidebar.css";
+import "./sidebar_content.css";
 import useModal from "../../../hooks/useModal";
 import { deleteGroup, updateGroup } from "../../../services/group";
 import toast from "react-hot-toast";
@@ -13,7 +13,8 @@ import { ConfirmDialog, FormModal } from "../../reusable";
 import { updateGroupFormData } from "../../../util/form/updateGroup/data";
 import { updateGroupFormValidationSchema } from "../../../util/form/updateGroup/validation";
 
-const Sidebar = ({
+const SidebarContent = ({
+  setShowSidebar,
   groups,
   setSelectedGroupOption,
   selectedGroupOption,
@@ -89,9 +90,10 @@ const Sidebar = ({
                     id: group?._id,
                     title: group?.name,
                   });
+                  typeof setShowSidebar !== undefined && setShowSidebar(false);
                 }}
                 action={true}
-                className="d-flex justify-content-between align-items-center mb-2 list-item"
+                className="d-flex justify-content-between align-items-center mb-2 list-item rounded shadow-sm"
               >
                 <div className="d-flex align-items-center">
                   <img
@@ -180,4 +182,4 @@ const Sidebar = ({
   );
 };
 
-export default Sidebar;
+export default SidebarContent;

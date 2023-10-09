@@ -8,7 +8,6 @@ const CustomSelect = ({ currentValue, onChangeHandler, options }) => {
   return (
     <FormControl fullWidth>
       <Select
-        size="small"
         value={currentValue}
         displayEmpty
         onChange={onChangeHandler}

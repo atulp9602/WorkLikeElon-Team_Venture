@@ -20,7 +20,7 @@ import { setGroups } from "../../context/groups/action";
 import useModal from "../../hooks/useModal";
 import { getCreateTodoFormData } from "../../util/form/createTodo/data";
 import { createTodoFormValidationSchema } from "../../util/form/createTodo/validation";
-import Sidebar from "../../components/layout/Sidebar_Content";
+import SidebarCotent from "../../components/layout/SidebarContent";
 import {
   ListGridViewSwitch,
   TodosDND,
@@ -46,10 +46,14 @@ import {
   fetchStatusWiseTodos,
   updateTodo,
   updateTodoSequence,
+  filterLoggedUserTodos,
 } from "../../services/todo";
 import { createGroup } from "../../services/group";
 import CustomSelect from "../../container/CustomSelect";
 import CustomDatePicker from "../../container/CustomDatePicker";
+import SidebarContent from "../../components/layout/SidebarContent";
+import dayjs from "dayjs";
+import { Box } from "@mui/material";
 
 const Home = () => {
   const {
@@ -57,6 +61,9 @@ const Home = () => {
     dispatch,
   } = useContext(GroupsContext);
 
+  const [selectedDate, setSelectedDate] = useState(
+    dayjs(new Date().toLocaleDateString())
+  );
   const [selectedGroupOption, setSelectedGroupOption] = useState({});
   const [userTodoList, setUserTodoList] = useState([]);
   const [todoToBeUpdated, setTodoToBeUpdated] = useState({});
@@ -66,7 +73,6 @@ const Home = () => {
   const [groupInput, setGroupInput] = useState("");
   const [selectedTodoStatus, setSelectedTodoStatus] = useState("");
   const [listView, setListView] = useState(true);
-  const [selectedDate, setSelectedDate] = useState(null);
   const [showSidebar, setShowSidebar] = useState(false);
 
   const handleSidebarToggle = () => {
@@ -88,47 +94,6 @@ const Home = () => {
       });
     }
   }, [isSmallDevice]);
-
-  const statusWiseUserTodos = useMemo(() => {
-    if (Array.isArray(userTodoList)) {
-      return userTodoList.reduce(
-        (acc, todo, index) => {
-          if (todo?.status == "todo") {
-            return {
-              ...acc,
-              todo: [...acc.todo, todo].sort((a, b) => a.sequence - b.sequence),
-            };
-          } else if (todo?.status == "in-progress") {
-            return {
-              ...acc,
-              "in-progress": [...acc["in-progress"], todo].sort(
-                (a, b) => a.sequence - b.sequence
-              ),
-            };
-          } else {
-            return {
-              ...acc,
-              completed: [...acc.completed, todo].sort(
-                (a, b) => a.sequence - b.sequence
-              ),
-            };
-          }
-        },
-        {
-          todo: [],
-          "in-progress": [],
-          completed: [],
-        }
-      );
-    }
-  }, [userTodoList, listView]);
-
-  const handleSetListView = useCallback(() => {
-    setListView(true);
-  }, [listView]);
-  const handleSetGridView = useCallback(() => {
-    setListView(false);
-  }, [listView]);
 
   const [isFetchTodosResponseLoading, setIsFetchTodosResponseLoading] =
     useState(false);
@@ -153,12 +118,11 @@ const Home = () => {
   }, [selectedGroupOption?.id]);
 
   useEffect(() => {
-    !!selectedGroupOption?.id && getCurrentDateLoggedUserGroupWiseTodos();
-  }, [todayOption]);
-
-  useEffect(() => {
-    !!selectedGroupOption?.id && getStatuswiseTodos(selectedTodoStatus);
-  }, [selectedTodoStatus]);
+    if (!selectedDate) {
+      setSelectedDate(dayjs(new Date().toLocaleDateString()));
+    }
+    !!selectedGroupOption?.id && fetchFilteredTodos();
+  }, [selectedGroupOption?.id, selectedTodoStatus, selectedDate]);
 
   const getGroupWiseUserTodoList = async (signal) => {
     setIsFetchTodosResponseLoading(true);
@@ -175,26 +139,6 @@ const Home = () => {
       setUserTodoList([]);
     } finally {
       setIsFetchTodosResponseLoading(false);
-    }
-  };
-
-  const getCurrentDateLoggedUserGroupWiseTodos = async () => {
-    if (todayOption == 0) {
-      getGroupWiseUserTodoList();
-    } else {
-      setIsFetchTodosResponseLoading(true);
-      try {
-        const response = await fetchCurrentDateLoggedUserGroupWiseTodos({
-          groupId: selectedGroupOption?.id,
-        });
-        setUserTodoList(response?.data?.data || []);
-        setSelectedTodoStatus("");
-      } catch (error) {
-        toast.error(error, { id: error });
-        setUserTodoList([]);
-      } finally {
-        setIsFetchTodosResponseLoading(false);
-      }
     }
   };
 
@@ -260,23 +204,20 @@ const Home = () => {
     }
   }, [todoIdToBeDeleted]);
 
-  const getStatuswiseTodos = async () => {
-    if (selectedTodoStatus === "") {
-      getCurrentDateLoggedUserGroupWiseTodos();
-    } else {
-      const payload = {
-        groupId: selectedGroupOption?.id,
-        status: selectedTodoStatus,
-      };
-      setIsFetchTodosResponseLoading(true);
-      try {
-        const response = await fetchStatusWiseTodos(payload);
-        setUserTodoList(response?.data?.data || []);
-      } catch (error) {
-        toast.error(error, { id: error });
-      } finally {
-        setIsFetchTodosResponseLoading(false);
-      }
+  const fetchFilteredTodos = async () => {
+    const payload = {
+      groupId: selectedGroupOption?.id,
+      status: selectedTodoStatus,
+      createdAt: selectedDate,
+    };
+    setIsFetchTodosResponseLoading(true);
+    try {
+      const response = await filterLoggedUserTodos(payload);
+      setUserTodoList(response?.data?.data || []);
+    } catch (error) {
+      toast.error(error, { id: error });
+    } finally {
+      setIsFetchTodosResponseLoading(false);
     }
   };
 
@@ -331,7 +272,8 @@ const Home = () => {
     <div className="parent">
       <Row className="container-fluid">
         <Col md={3} className="sidebar d-none d-md-block">
-          <Sidebar
+          <SidebarContent
+            setShowSidebar={setShowSidebar}
             groups={groups}
             selectedGroupOption={selectedGroupOption}
             setSelectedGroupOption={setSelectedGroupOption}
@@ -349,7 +291,7 @@ const Home = () => {
               className="btn shadow-lg d-md-none bg-transparent"
               onClick={handleSidebarToggle}
             >
-              <AiOutlineMenuUnfold fontSize={20} />
+              <AiOutlineMenuUnfold fontSize={25} color="#31D2F2" />
             </button>
             <p className="fw-2 fs-5 m-0">
               {selectedGroupOption?.title ?? "No Group Selected"}
@@ -368,42 +310,36 @@ const Home = () => {
           <div className="todolist">
             <div className="filter-div">
               <div className="d-flex gap-2 flex-grow-1">
-                <CustomDatePicker
-                  selectedDate={selectedDate}
-                  onChange={(date) => setSelectedDate(date)}
-                />
-                <CustomSelect
-                  currentValue={selectedTodoStatus}
-                  onChangeHandler={(e) => setSelectedTodoStatus(e.target.value)}
-                  options={statusSelectionOptions}
-                />
+                <Box sx={{ flex: 1 }}>
+                  <CustomDatePicker
+                    selectedDate={selectedDate}
+                    setSelectedDate={setSelectedDate}
+                  />
+                </Box>
+                <Box sx={{ flex: 1 }}>
+                  <CustomSelect
+                    currentValue={selectedTodoStatus}
+                    onChangeHandler={(e) =>
+                      setSelectedTodoStatus(e.target.value)
+                    }
+                    options={statusSelectionOptions}
+                  />
+                </Box>
               </div>
-              <ListGridViewSwitch
+              {/* <ListGridViewSwitch
                 listView={listView}
                 handleSetListView={handleSetListView}
                 handleSetGridView={handleSetGridView}
-              />
+              /> */}
             </div>
 
-            {listView ? (
-              isFetchTodosResponseLoading ? (
-                <h5 className="m-3 text-secondary">Loading...</h5>
-              ) : (
-                <TodoList
-                  isFetchTodosResponseLoading={isFetchTodosResponseLoading}
-                  userTodoList={userTodoList}
-                  renderSingleTodo={renderSingleTodo}
-                />
-              )
+            {isFetchTodosResponseLoading ? (
+              <h5 className="m-3 text-secondary">Loading...</h5>
             ) : (
-              <TodosDND
-                groupId={selectedGroupOption?._id}
-                allStatusTodosList={statusWiseUserTodos}
+              <TodoList
+                isFetchTodosResponseLoading={isFetchTodosResponseLoading}
+                userTodoList={userTodoList}
                 renderSingleTodo={renderSingleTodo}
-                handleUpdateTodosSequence={handleUpdateTodosSequence}
-                todoToBeUpdated={todoToBeUpdated}
-                setTodoToBeUpdated={setTodoToBeUpdated}
-                isUpdateTodoResponseLoading={isUpdateTodoResponseLoading}
               />
             )}
           </div>
@@ -420,7 +356,8 @@ const Home = () => {
             <Offcanvas.Title>Groups</Offcanvas.Title>
           </Offcanvas.Header>
           <Offcanvas.Body>
-            <Sidebar
+            <SidebarContent
+              setShowSidebar={setShowSidebar}
               groups={groups}
               selectedGroupOption={selectedGroupOption}
               setSelectedGroupOption={setSelectedGroupOption}
