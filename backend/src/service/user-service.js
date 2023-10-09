@@ -39,7 +39,7 @@ class UserService {
             user.password = password;
             const response = await this._userRepository.createOne(user);
             const token = this.generateToken(user);
-            let url = `http://localhost:3001/create-password/${token}`;
+            let url = `http://localhost:3000/create-password/${token}`;
             // Send email to the newly created account with a temporary password
             await sendEmail('Temp Password', `<p>Your password is: ${password}.<br>Click the following link to change your password:${url}</p>`,user.email);
             const plainresult = response.toObject();
@@ -97,7 +97,7 @@ class UserService {
                 throw new Error(`${email} doesn't exists`) ;
             }
             const token = this.generateToken(isUserExist);
-            let url = `http://localhost:3001/reset-password/${token}`;
+            let url = `http://localhost:3000/reset-password/${token}`;
             // send the link to reset the password in email
             await sendEmail('Reset Password', `Click the following link to change your password ${url}</p>`,email);
 

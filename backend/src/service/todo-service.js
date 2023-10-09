@@ -1,28 +1,32 @@
-const TodoRepository = require("../repository/todo-repo");
-const GroupRepository = require("../repository/group-repo");
+const TodoRepository = require('../repository/todo-repo');
+const GroupRepository = require('../repository/group-repo');
+const Todo = require('../models/todo');
 
 class TodoService {
-  constructor() {
-    this._todoRepository = new TodoRepository();
-    this._groupRepository = new GroupRepository();
-  }
+    constructor() {
+        this._todoRepository = new TodoRepository();
+        this._groupRepository = new GroupRepository();
+    }
 
-  async addTodoItem(todoItems, userId) {
-    try {
-      todoItems.estimatedTime = Number(todoItems.estimatedTime);
-      const group = await this._groupRepository.findBy({
-        _id: todoItems.groupId,
-      });
-      if (!group) {
-        throw new Error("No such group found");
-      }
-      const todo = await this._todoRepository.createOne({
-        ...todoItems,
-        userId,
-      });
-      group.todos.push(todo._id);
-      group.save();
-
+    async addTodoItem(todoItems,userId) {
+        try {
+            // // const [hours,minutes] = todoItems.estimatedTime.split(':').map(Number);
+            // // delete todoItems.estimatedTime;
+            // const extimated 
+            todoItems.estimatedTime = Number(todoItems.estimatedTime);
+            // if(NaN(todoItems.estimatedTime)){
+            //     throw new Error('Invalid estimated time');
+            // }
+            const group = await this._groupRepository.findBy({_id:todoItems.groupId});
+            if(!group) {
+                throw new Error('No such group found');
+            }
+            const todo = await this._todoRepository.createOne({
+                ...todoItems,
+                userId,
+            });
+            group.todos.push(todo._id);
+            group.save();
       return todo;
     } catch (error) {
       console.log(error);
@@ -67,7 +71,27 @@ class TodoService {
     } catch (error) {
       throw new Error(error.message);
     }
-  }
-}
+
+    async updateTaskSequence(groupId,sourceIndex, destinationIndex) {
+        try {
+            const group = await this._groupRepository.findBy({_id: groupId});
+            if(!group) {
+                throw new Error(`Group not found`);
+            }
+            console.log(`The task sequence is :${sourceIndex} and ${destinationIndex}`);
+            await Todo.updateMany(
+                { sequenceNo: { $gte: Math.min(sourceIndex, destinationIndex), $lt: Math.max(sourceIndex, destinationIndex)}},
+                { $inc: { sequenceNo: (sourceIndex < destinationIndex)?-1:1}}
+            );
+            const sourceTask = await Todo.findOne({ sequenceNo: sourceIndex });
+            sourceTask.sequenceNo = destinationIndex;
+            await sourceTask.save();
+        } catch (error) {
+            console.log(error);
+            throw Error(error.message);
+        }
+    }
+};
+
 
 module.exports = TodoService;

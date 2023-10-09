@@ -17,8 +17,8 @@ module.exports = {
       return res.status(500).json({
         success: false,
         data: {},
-        message: "There is an error for creating the user",
-        error: error.message,
+        message:error.message,
+        error,
       });
     }
   },
@@ -38,8 +38,8 @@ module.exports = {
       return res.status(500).json({
         success: false,
         data: {},
-        message: "There is an error in user signin",
-        error: error.message,
+        message:error.message,
+        error
       });
     }
   },
@@ -68,8 +68,8 @@ module.exports = {
       return res.status(500).json({
         success: false,
         data: {},
-        message: "An error occurred while updating the password",
-        error: error.message,
+        message: error.message,
+        error,
       });
     }
   },
@@ -89,8 +89,8 @@ module.exports = {
       return res.status(500).json({
         sucess: false,
         data: {},
-        message: "An error occurred while resetting your password",
-        errors: error.message,
+        message:error.message,
+        error
       });
     }
   },
@@ -132,8 +132,8 @@ module.exports = {
       return res.status(500).json({
         sucess: false,
         data: {},
-        message: "Error while fetching user information",
-        error: error.message,
+        message:error.message,
+        error,
       });
     }
   },

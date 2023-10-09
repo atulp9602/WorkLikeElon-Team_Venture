@@ -14,11 +14,13 @@ class CrudRepository {
 
     async updateOne(id,data) {
         try {
-            console.log({id});
+            console.log(id);
             const response = await this.model.findByIdAndUpdate(id,data,{ new: true,runValidators: true });
-            response.save();
+            console.log(response);
+            await response.save();
             return response;
         } catch (error) {
+            console.log(error);
             throw error;
         }
     }

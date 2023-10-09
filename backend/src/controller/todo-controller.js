@@ -90,6 +90,32 @@ module.exports = {
             })
         }
     },
+
+    async changeTaskSequence(req,res){
+        try {
+            let {sourceIndex,destinationIndex} = req.body;
+            const groupId = req.params.groupId;
+            sourceIndex = Number(sourceIndex);
+            destinationIndex = Number(destinationIndex);
+            if(isNaN(sourceIndex) && isNaN(destinationIndex)) {
+                throw new Error(`Invalid destination OR Source Index`);
+            }
+            const result = await todoService.updateTaskSequence(groupId, sourceIndex, destinationIndex);
+
+            return res.status(200).json({
+                success:true,
+                data:result,
+                error:{},
+            })
+        } catch (error) {
+            return res.status(500).json({
+                success :false ,
+                data:{} ,
+                message:error.message,
+                error,
+            })
+        }
+    },
     
     async removeTodoItem(req, res) {
         try {
