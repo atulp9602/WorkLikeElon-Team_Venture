@@ -1,10 +1,1 @@
-.dropdown-menu {
-  top: 46px !important;
-}
-.dropdown-item:active {
-  background-color: rgb(163, 163, 163);
-}
 
-.dropdown:hover .dropdown-menu {
-  display: block !important;
-}
