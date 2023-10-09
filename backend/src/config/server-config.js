@@ -4,7 +4,11 @@ const mongoose = require('mongoose');
 // dotenv.config();
 const CONNECTION_URL = process.env.CONNECTION_URL;
 const connect = async()=>{
-    await mongoose.connect(CONNECTION_URL);
+    try {
+        await mongoose.connect(CONNECTION_URL);   
+    } catch (error) {
+        console.log("There is an error connecting to mongoDB");
+    }
 }
 module.exports = {
     PORT:process.env.PORT,

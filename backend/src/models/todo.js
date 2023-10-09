@@ -15,20 +15,13 @@ const todoSchema = new mongoose.Schema({
         default:'todo',
     },
     estimatedTime: {
-        hours: {
-            type: Number,
-            default:0,
-            required: true,
-            min: 0,
-            max:24,
-        },
-        minutes: {
-            type: Number,
-            default:0,
-            required: true,
-            min: 0,
-            max: 59
-        }
+        type: Number,
+        default:0,
+        required: true,
+    },
+    sequenceNo: {
+        type:Number ,
+        // required:true,
     },
     groupId :{
         type: mongoose.Schema.Types.ObjectId,
@@ -48,6 +41,18 @@ todoSchema.pre('remove', async function(next) {
     );
 
     next();
+});
+todoSchema.pre('save', async function (next) {
+    try {
+        if (typeof this.sequenceNo !== 'number') {
+            const highestTodo = await this.constructor.findOne().sort('-sequenceNo');
+            const newSequenceNo = (highestTodo && highestTodo.sequenceNo ? highestTodo.sequenceNo : 0) + 1;
+            this.sequenceNo = newSequenceNo;
+        }
+        next();
+    } catch (error) {
+        next(error);
+    }
 });
 
 const Todo = mongoose.model('Todo',todoSchema,'Todo');
