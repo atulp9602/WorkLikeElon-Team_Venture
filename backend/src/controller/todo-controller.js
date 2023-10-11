@@ -50,23 +50,17 @@ module.exports = {
         try {
             let filter = {
                 userId:req.user.id,
-                // ...req.body,
+                ...req.body,
             }
             if(filter.createdAt){
-                const dateParts = filter.createdAt.split('-');
-                const day = parseInt(dateParts[0], 10);
-                const month = parseInt(dateParts[1], 10) - 1; // Months are zero-indexed
-                const year = parseInt(dateParts[2], 10);
-
-                if (isNaN(day) || isNaN(month) || isNaN(year)) {
-                throw new Error('Invalid date format');
-                }
-
-                const dateToFind = new Date(year, month, day);
-                const nextDay = new Date(year, month, day + 1);
-                filter.createdAt = { $gte: dateToFind, $lt: nextDay};
+                
             }
-            // new Date(req.body.createdAt).toISOString();
+            const dateToFind = new Date(filter.createdAt);
+            if(!isNaN(dateToFind.getTime())){
+                const startDate = new Date(dateToFind.getFullYear(), dateToFind.getMonth(), dateToFind.getDate(), 0, 0, 0, 0);
+                const endDate = new Date(dateToFind.getFullYear(), dateToFind.getMonth(), dateToFind.getDate(), 23, 59, 59, 999);
+                filter.createdAt = { $gte: startDate, $lte: endDate };                
+            }
             if(req.body.groupId) {
                 filter.groupId = req.body.groupId;
             }

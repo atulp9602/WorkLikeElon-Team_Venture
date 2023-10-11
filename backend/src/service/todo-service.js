@@ -2,7 +2,8 @@ const TodoRepository = require('../repository/todo-repo');
 const GroupRepository = require('../repository/group-repo');
 const Todo = require('../models/todo');
 
-class TodoService {
+class TodoService 
+{
     constructor() {
         this._todoRepository = new TodoRepository();
         this._groupRepository = new GroupRepository();
@@ -58,18 +59,19 @@ class TodoService {
   }
 
   async updateTodoItem(todoId, userId, todoData) {
-    try {
-      const todo = await this._todoRepository.updateOne(
-        { _id: todoId, userId: userId },
-        todoData
-      );
-      //if no todo is returned then the user has not access to that todo
-      if (!todo) {
-        throw new Error("no todo found");
-      }
-      return todo;
-    } catch (error) {
-      throw new Error(error.message);
+        try {
+        const todo = await this._todoRepository.updateOne(
+            { _id: todoId, userId: userId },
+            todoData
+        );
+        //if no todo is returned then the user has not access to that todo
+        if (!todo) {
+            throw new Error("no todo found");
+        }
+        return todo;
+        } catch (error) {
+        throw new Error(error.message);
+        }
     }
 
     async updateTaskSequence(groupId,sourceIndex, destinationIndex) {
@@ -91,7 +93,6 @@ class TodoService {
             throw Error(error.message);
         }
     }
-};
+}
 
-
-module.exports = TodoService;
+module.exports = Todo;
