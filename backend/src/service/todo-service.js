@@ -11,13 +11,7 @@ class TodoService
 
     async addTodoItem(todoItems,userId) {
         try {
-            // // const [hours,minutes] = todoItems.estimatedTime.split(':').map(Number);
-            // // delete todoItems.estimatedTime;
-            // const extimated 
             todoItems.estimatedTime = Number(todoItems.estimatedTime);
-            // if(NaN(todoItems.estimatedTime)){
-            //     throw new Error('Invalid estimated time');
-            // }
             const group = await this._groupRepository.findBy({_id:todoItems.groupId});
             if(!group) {
                 throw new Error('No such group found');
@@ -95,4 +89,4 @@ class TodoService
     }
 }
 
-module.exports = Todo;
+module.exports = TodoService;

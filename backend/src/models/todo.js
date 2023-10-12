@@ -24,6 +24,10 @@ const todoSchema = new mongoose.Schema(
         type:Number ,
         // required:true,
     },
+    pomodoro: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Pomodoro",
+    },
     groupId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Group",
