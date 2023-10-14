@@ -68,20 +68,24 @@ class TodoService
         }
     }
 
-    async updateTaskSequence(groupId,sourceIndex, destinationIndex) {
+    async updateTaskSequence(groupId,updatedTodoSequence) {
         try {
             const group = await this._groupRepository.findBy({_id: groupId});
             if(!group) {
                 throw new Error(`Group not found`);
             }
-            console.log(`The task sequence is :${sourceIndex} and ${destinationIndex}`);
-            await Todo.updateMany(
-                { sequenceNo: { $gte: Math.min(sourceIndex, destinationIndex), $lt: Math.max(sourceIndex, destinationIndex)}},
-                { $inc: { sequenceNo: (sourceIndex < destinationIndex)?-1:1}}
-            );
-            const sourceTask = await Todo.findOne({ sequenceNo: sourceIndex });
-            sourceTask.sequenceNo = destinationIndex;
-            await sourceTask.save();
+
+            const bulkOps = updatedTodoSequence.map(updatedTask=>({
+              updateOne:{
+                filter: { _id: updatedTask._id },
+                update: { $set: { sequenceNo: updatedTask.sequenceNo } },
+                }
+            }));
+
+            const result = await this._todoRepository.bulkWrite(bulkOps);
+            if (result.modifiedCount !== bulkOps.length) {
+              throw new Error(`Failed to update some tasks`);
+          }
         } catch (error) {
             console.log(error);
             throw Error(error.message);

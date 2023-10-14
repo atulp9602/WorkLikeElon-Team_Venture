@@ -12,6 +12,16 @@ class CrudRepository {
         }
     }
 
+    async bulkWrite(operations) {
+        try {
+            const result = await this.model.bulkWrite(operations);
+
+            return result;
+        } catch (error) {
+            throw Error(error.message);
+        }
+    }
+
     async updateOne(id,data) {
         try {
             console.log(id);

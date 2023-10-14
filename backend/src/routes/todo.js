@@ -10,5 +10,4 @@ router.delete('/:todoId',validateProtectedRoute,removeTodoItem);
 router.get('/',validateProtectedRoute,findTodoItem);
 router.patch('/updateOrder/:groupId',validateProtectedRoute,changeTaskSequence);
 
-
 module.exports = router;

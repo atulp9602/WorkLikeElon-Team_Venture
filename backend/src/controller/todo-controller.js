@@ -53,13 +53,12 @@ module.exports = {
                 ...req.body,
             }
             if(filter.createdAt){
-                
-            }
-            const dateToFind = new Date(filter.createdAt);
-            if(!isNaN(dateToFind.getTime())){
-                const startDate = new Date(dateToFind.getFullYear(), dateToFind.getMonth(), dateToFind.getDate(), 0, 0, 0, 0);
-                const endDate = new Date(dateToFind.getFullYear(), dateToFind.getMonth(), dateToFind.getDate(), 23, 59, 59, 999);
-                filter.createdAt = { $gte: startDate, $lte: endDate };                
+                const dateToFind = new Date(filter.createdAt);
+                if(!isNaN(dateToFind.getTime())){
+                    const startDate = new Date(dateToFind.getFullYear(), dateToFind.getMonth(), dateToFind.getDate(), 0, 0, 0, 0);
+                    const endDate = new Date(dateToFind.getFullYear(), dateToFind.getMonth(), dateToFind.getDate(), 23, 59, 59, 999);
+                    filter.createdAt = { $gte: startDate, $lte: endDate };                
+                }
             }
             if(req.body.groupId) {
                 filter.groupId = req.body.groupId;
@@ -87,14 +86,15 @@ module.exports = {
 
     async changeTaskSequence(req,res){
         try {
-            let {sourceIndex,destinationIndex} = req.body;
+            const {updatedTodoSequence} = {...req.body}
             const groupId = req.params.groupId;
-            sourceIndex = Number(sourceIndex);
-            destinationIndex = Number(destinationIndex);
-            if(isNaN(sourceIndex) && isNaN(destinationIndex)) {
-                throw new Error(`Invalid destination OR Source Index`);
-            }
-            const result = await todoService.updateTaskSequence(groupId, sourceIndex, destinationIndex);
+            // sourceIndex = Number(sourceIndex);
+            // destinationIndex = Number(destinationIndex);
+            // if(isNaN(sourceIndex) && isNaN(destinationIndex)) {
+            //     throw new Error(`Invalid destination OR Source Index`);
+            // }
+            // console.log(updatedTodoSequence);
+            const result = await todoService.updateTaskSequence(groupId, updatedTodoSequence);
 
             return res.status(200).json({
                 success:true,
