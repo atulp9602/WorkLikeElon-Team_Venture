@@ -24,11 +24,15 @@ const todoSchema = new mongoose.Schema(
         type:Number ,
         // required:true,
     },
-    groupId: {
+    pomodoro: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Group",
-      required: true,
+      ref: "Pomodoro",
     },
+    // groupId: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "Group",
+    //   required: true,
+    // },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -37,13 +41,13 @@ const todoSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-todoSchema.pre("remove", async function (next) {
-  const group = await mongoose
-    .model("Group")
-    .findOneAndUpdate({ _id: this.groupId }, { $pull: { todos: this._id } });
+// todoSchema.pre("remove", async function (next) {
+//   const group = await mongoose
+//     .model("Group")
+//     .findOneAndUpdate({ _id: this.groupId }, { $pull: { todos: this._id } });
 
-  next();
-});
+//   next();
+// });
 todoSchema.pre('save', async function (next) {
     try {
         if (typeof this.sequenceNo !== 'number') {
