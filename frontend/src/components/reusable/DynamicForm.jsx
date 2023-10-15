@@ -190,7 +190,8 @@ const DynamicForm = ({
               as="select"
               {...register(name, validation)}
               onChange={handleInputChange}
-              onBlur={handleBlur}>
+              onBlur={handleBlur}
+            >
               <option value="">Select an option</option>
               {options.map((option, index) => (
                 <option key={`${name}-${index}`} value={option?.value}>
@@ -271,7 +272,8 @@ const DynamicForm = ({
       <Button
         type="submit"
         disabled={isResponseLoading}
-        className={`${buttonClass} my-2`}>
+        className={`${buttonClass} my-2`}
+      >
         {isResponseLoading ? (
           <Spinner animation="border" size="sm" />
         ) : (

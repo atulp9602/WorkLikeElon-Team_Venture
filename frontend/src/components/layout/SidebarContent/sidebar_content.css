@@ -1,9 +1,30 @@
-.list-group-item.active {
-  background-color: rgba(35, 197, 197, 0.774) !important;
-}
 .sidebar-content {
   display: flex;
   flex-direction: column;
   height: 100%;
   position: relative;
+}
+
+.sidebar-content .btn {
+  padding: 6px;
+}
+
+.sidebar-content .btn svg {
+  margin-right: 4px;
+}
+
+.sidebar-content .list-group-item.active {
+  border-color: rgb(5, 89, 107) !important ;
+  background-color: rgb(5, 89, 107) !important;
+  border: none !important;
+  color: #fff;
+}
+
+.sidebar-content .text-center {
+  text-align: center;
+}
+
+.sidebar-content .position-absolute {
+  left: 50%;
+  transform: translateX(-50%);
 }

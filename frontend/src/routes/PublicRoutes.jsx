@@ -1,5 +1,6 @@
 import { lazy } from "react";
 import { Route, Navigate, Routes } from "react-router-dom";
+import Pomodoro from "../container/Promodoro";
 
 const Login = lazy(() => import("../pages/auth/Login"));
 const Signup = lazy(() => import("../pages/auth/Signup"));

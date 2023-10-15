@@ -14,11 +14,11 @@ const ConfirmDialog = ({
   return (
     <div className="static-modal">
       <Modal
-        animation={false}
         show={isOpen}
         onHide={() => proceed(false)}
         backdrop={enableEscape ? true : "static"}
-        keyboard={enableEscape}>
+        keyboard={enableEscape}
+      >
         <Modal.Header>
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>

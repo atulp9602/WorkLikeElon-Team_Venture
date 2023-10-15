@@ -1,7 +1,6 @@
 import React from "react";
-import { AiFillDelete } from "react-icons/ai";
-import { BiEdit } from "react-icons/bi";
-import { GrView } from "react-icons/gr";
+import { AiFillDelete, AiOutlineEye } from "react-icons/ai";
+import { BiEdit, BiStreetView } from "react-icons/bi";
 import moment from "moment";
 import { MdOutlineUpdate } from "react-icons/md";
 
@@ -59,10 +58,10 @@ const SingleTodo = ({
                 todoDetailModal.openModal();
               }}
             >
-              <GrView fontSize={20} />
+              <AiOutlineEye fontSize={20} />
             </button>
             <button
-              className="btn btn-sm btn-primary"
+              className="btn btn-sm btn-outline-primary"
               onClick={() => {
                 setTodoToBeUpdated(todo);
                 updateTodoModal.openModal();
@@ -71,7 +70,7 @@ const SingleTodo = ({
               <BiEdit fontSize={20} />
             </button>
             <button
-              className="btn btn-sm btn-danger"
+              className="btn btn-sm btn-outline-danger"
               onClick={() => {
                 setTodoIdToBeDeleted(todo?._id);
                 confirmModal.openModal();

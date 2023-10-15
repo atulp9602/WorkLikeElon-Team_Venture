@@ -304,7 +304,7 @@ const Home = () => {
               }}
             >
               <AiOutlinePlus fontSize={20} className="me-1" />
-              Add Todo
+              Add Task
             </button>
           </div>
           <div className="todolist">

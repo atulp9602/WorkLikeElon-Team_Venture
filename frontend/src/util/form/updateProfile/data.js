@@ -8,11 +8,6 @@ export const updateProfileFormData = [
         type: "text",
       },
       {
-        name: "email",
-        label: "Email",
-        type: "email",
-      },
-      {
         name: "contactno",
         label: "Contact No",
         type: "number",

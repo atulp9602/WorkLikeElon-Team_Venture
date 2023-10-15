@@ -93,7 +93,7 @@ const SidebarContent = ({
                   typeof setShowSidebar !== undefined && setShowSidebar(false);
                 }}
                 action={true}
-                className="d-flex justify-content-between align-items-center mb-2 list-item rounded shadow-sm"
+                className="d-flex justify-content-between align-items-center mb-2 list-item rounded shadow-sm -"
               >
                 <div className="d-flex align-items-center">
                   <img

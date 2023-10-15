@@ -7,6 +7,7 @@ import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 
 import { PublicRoutes, PrivateRoutes } from "./routes";
 import { DragDropContext } from "react-beautiful-dnd";
+import Pomodoro from "./container/Promodoro";
 
 const LoadingPage = lazy(() => import("./pages/LoadingPage"));
 const PageNotFound = lazy(() => import("./pages/PageNotFound"));
@@ -29,6 +30,7 @@ function App() {
             <Route path="/" element={<Navigate to="/authentication/login" />} />
             <Route path="/dashboard/*" element={<PrivateRoutes />} />
             <Route path="/authentication/*" element={<PublicRoutes />} />
+            <Route path="/pomodoro" element={<Pomodoro />} />
             <Route path="/*" element={<PageNotFound />} />
           </Routes>
         </Suspense>

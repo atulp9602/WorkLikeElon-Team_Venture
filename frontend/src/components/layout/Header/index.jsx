@@ -91,7 +91,7 @@ const Header = () => {
                 </li>
                 <li className="dropdown-item">
                   <Link
-                    className="nav-link  d-flex align-items-center"
+                    className="nav-link  d-flex align-items-center text-danger"
                     to="/authentication/login"
                     onClick={handleLogout}
                   >
