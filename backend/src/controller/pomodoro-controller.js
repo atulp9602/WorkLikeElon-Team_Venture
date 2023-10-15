@@ -15,7 +15,6 @@ module.exports = {
                 success: true,
                 data:{},
                 message:'task started',
-                error:{}
             });
     
         } catch (error) {
@@ -23,7 +22,6 @@ module.exports = {
                 success: false,
                 data:{},
                 message:error.message,
-                error,
             });
         }
     },
@@ -42,14 +40,12 @@ module.exports = {
                 success:true,
                 data:{},
                 message: 'Task updated successfully',
-                error:{},
             });
         } catch (error) {
             return res.status(500).json({
                 success:false,
                 data:{},
                 message:error.message,
-                error,
             })
         }
     }

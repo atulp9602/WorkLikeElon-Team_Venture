@@ -1,4 +1,5 @@
 const {PomodoroRepository,TodoRepository} = require('../repository/index');
+const {STATUS_CODES} = require('../utils/constant');
 
 class PomodoroService {
     constructor() {
@@ -8,23 +9,33 @@ class PomodoroService {
     async startTask(data) {
         try {
             const {userId,taskId,workTime,breakTime,longBreakTime} = data;
-            // const task = await this._todoRepo.findBy({_id:taskId});
             const [task, pomodoro] = await Promise.all([
                 this._todoRepo.findBy({ _id: taskId }),
                 this._pomodoroRepo.findBy({ userId, workTime, breakTime, longBreakTime })
             ]);
             if(!task) {
-                throw new Error("Task doesn't exists");
+                // throw new Error("Task doesn't exists");
+                throw {
+                    message: "Task doesn't exist",
+                    statusCode:STATUS_CODES.NOT_FOUND
+                }
             }
             if(task.estimatedTime != workTime) {
-                throw new Error('Estimated Time must be equal to workTime');
+                // throw new Error('Estimated Time must be equal to workTime');
+                throw {
+                    message: "Estimated Time must be equal to workTime",
+                    statusCode: STATUS_CODES.BAD_REQUEST,
+                }
             }
             await this._todoRepo.updateOne({_id: taskId},{status:'in-progress'});
             if(!pomodoro) {
                 let result = await this._pomodoroRepo.createOne({userId,taskId,workTime,breakTime,longBreakTime});
             }
         } catch (error) {
-            throw new Error(error.message);
+            throw ({
+                statusCode:error.statusCode || STATUS_CODES['INTERNAL_SERVER_ERROR'],
+                message: error.message,
+            });
         }
     }
 
@@ -33,7 +44,10 @@ class PomodoroService {
             const {taskId,isTaskCompleted} = data;
             const task = await this._todoRepo.findBy({_id:taskId});
             if(!task) {
-                throw new Error("Task doesn't exists");
+                throw {
+                    statusCode:STATUS_CODES.NOT_FOUND,
+                    message: "Task does not exist"
+                }
             }
             let status = 'completed';
             if(!isTaskCompleted){
@@ -41,7 +55,10 @@ class PomodoroService {
             }
             await this._todoRepo.updateOne({_id: taskId},{status:status});
         } catch (error) {
-            throw new Error(error.message);
+            throw ({
+                statusCode:error.statusCode || STATUS_CODES.INTERNAL_SERVER_ERROR,
+                message:error.message,
+            });
         }
     }
 }
