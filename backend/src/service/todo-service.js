@@ -1,38 +1,29 @@
-const TodoRepository = require("../repository/todo-repo");
-const GroupRepository = require("../repository/group-repo");
-const Todo = require("../models/todo");
+const TodoRepository = require('../repository/todo-repo');
+const GroupRepository = require('../repository/group-repo');
+const {STATUS_CODES} = require('../utils/constant');
+const Todo = require('../models/todo');
 
-class TodoService {
-  constructor() {
-    this._todoRepository = new TodoRepository();
-    this._groupRepository = new GroupRepository();
-  }
+class TodoService 
+{
+    constructor() {
+        this._todoRepository = new TodoRepository();
+        this._groupRepository = new GroupRepository();
+    }
 
-  async addTodoItem(todoItems, userId) {
-    try {
-      // // const [hours,minutes] = todoItems.estimatedTime.split(':').map(Number);
-      // // delete todoItems.estimatedTime;
-      // const extimated
-      todoItems.estimatedTime = Number(todoItems.estimatedTime);
-      // if(NaN(todoItems.estimatedTime)){
-      //     throw new Error('Invalid estimated time');
-      // }
-      const group = await this._groupRepository.findBy({
-        _id: todoItems.groupId,
-      });
-      if (!group) {
-        throw new Error("No such group found");
-      }
-      const todo = await this._todoRepository.createOne({
-        ...todoItems,
-        userId,
-      });
-      group.todos.push(todo._id);
-      group.save();
+    async addTodoItem(todoItems,userId) {
+        try {
+            todoItems.estimatedTime = Number(todoItems.estimatedTime);
+            const todo = await this._todoRepository.createOne({
+                ...todoItems,
+                userId,
+            });
       return todo;
     } catch (error) {
       console.log(error);
-      throw new Error(error.message);
+      throw {
+        message: error.message,
+        statusCode: error.statusCode || 500,
+      }
     }
   }
 
@@ -40,11 +31,18 @@ class TodoService {
     try {
       const todo = await this._todoRepository.delete({ _id: todoId, userId });
       if (!todo) {
-        throw new Error("No item found");
+        // throw new Error("No item found");
+        throw {
+          message: "No item found",
+          statusCode: STATUS_CODES['NOT_FOUND'],
+        }
       }
       return true;
     } catch (error) {
-      throw new Error(error.message);
+      throw ({
+        message: error.message,
+        statusCode: error.statusCode || STATUS_CODES.INTERNAL_SERVER_ERROR,
+        })
     }
   }
 
@@ -55,52 +53,59 @@ class TodoService {
 
       return todo;
     } catch (error) {
-      throw new Error(error.message);
+      // throw new Error(error.message);
+      throw({
+        message : error.message ,
+        statuscode : error.statusCode,
+      })
     }
   }
 
   async updateTodoItem(todoId, userId, todoData) {
-    try {
-      const todo = await this._todoRepository.updateOne(
-        { _id: todoId, userId: userId },
-        todoData
-      );
-      //if no todo is returned then the user has not access to that todo
-      if (!todo) {
-        throw new Error("no todo found");
-      }
-      return todo;
-    } catch (error) {
-      throw new Error(error.message);
+        try {
+        const todo = await this._todoRepository.updateOne(
+            { _id: todoId, userId: userId },
+            todoData,
+        );
+        //if no todo is returned then the user has not access to that todo
+        if (!todo) {
+            throw{
+              statusCode :STATUS_CODES["NOT_FOUND"],
+              message:"no todo found",
+            };
+        }
+        return todo;
+        } catch (error) {
+          throw({
+            statuscode : error.statusCode|| STATUS_CODES.INTERNAL_SERVER_ERROR,
+            message : error.message,
+          });
+        }
     }
-  }
 
-  async updateTaskSequence(groupId, sourceIndex, destinationIndex) {
-    try {
-      const group = await this._groupRepository.findBy({ _id: groupId });
-      if (!group) {
-        throw new Error(`Group not found`);
-      }
-      console.log(
-        `The task sequence is :${sourceIndex} and ${destinationIndex}`
-      );
-      await Todo.updateMany(
-        {
-          sequenceNo: {
-            $gte: Math.min(sourceIndex, destinationIndex),
-            $lt: Math.max(sourceIndex, destinationIndex),
-          },
-        },
-        { $inc: { sequenceNo: sourceIndex < destinationIndex ? -1 : 1 } }
-      );
-      const sourceTask = await Todo.findOne({ sequenceNo: sourceIndex });
-      sourceTask.sequenceNo = destinationIndex;
-      await sourceTask.save();
-    } catch (error) {
-      console.log(error);
-      throw Error(error.message);
+    async updateTaskSequence(updatedTodoSequence) {
+        try {
+            const bulkOps = updatedTodoSequence.map(updatedTask=>({
+              updateOne:{
+                filter: { _id: updatedTask._id },
+                update: { $set: { sequenceNo: updatedTask.sequenceNo } },
+                }
+            }));
+
+            const result = await this._todoRepository.bulkWrite(bulkOps);
+            if (result.modifiedCount !== bulkOps.length) {
+              throw ({
+                statusCode : STATUS_CODES['INTERNAL_SERVER_ERROR'],
+                message:'Failed to update some tasks',
+              });
+          }
+        } catch (error) {
+            throw ({
+              statusCode : error.statusCode || STATUS_CODES['INTERNAL_SERVER_ERROR'],
+              message:error.message,
+            });
+        }
     }
-  }
 }
 
 module.exports = TodoService;
