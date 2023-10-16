@@ -9,6 +9,6 @@ router.post('/create',validateTaskCreateRequest,validateProtectedRoute,createTod
 router.patch('/:todoId',validateTaskUpdateRequest,validateProtectedRoute,updatetodoItem);
 router.delete('/:todoId',validateTaskDeleteRequest,validateProtectedRoute,removeTodoItem);
 router.get('/',validateProtectedRoute,findTodoItem);
-router.patch('/updateOrder/',validateProtectedRoute,changeTaskSequence);
+router.patch('/updateOrder/:groupId',validateProtectedRoute,changeTaskSequence);
 
 module.exports = router;

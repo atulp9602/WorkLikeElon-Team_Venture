@@ -57,6 +57,9 @@ module.exports = {
                     filter.createdAt = { $gte: startDate, $lte: endDate };                
                 }
             }
+            if(req.body.groupId){
+                filter.groupId = req.body.groupId;
+            }
             if(req.body.status) {
                 filter.status = req.body.status;
             }
@@ -79,13 +82,14 @@ module.exports = {
     async changeTaskSequence(req,res){
         try {
             const {updatedTodoSequence} = {...req.body};
+            const groupId = req.params.groupId;
             // sourceIndex = Number(sourceIndex);
             // destinationIndex = Number(destinationIndex);
             // if(isNaN(sourceIndex) && isNaN(destinationIndex)) {
             //     throw new Error(`Invalid destination OR Source Index`);
             // }
             // console.log(updatedTodoSequence);
-            const result = await todoService.updateTaskSequence(updatedTodoSequence);
+            const result = await todoService.updateTaskSequence(groupId,updatedTodoSequence);
 
             return res.status(STATUS_CODES.OK).json({
                 success:true,

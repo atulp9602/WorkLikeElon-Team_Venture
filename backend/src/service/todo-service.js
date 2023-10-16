@@ -13,10 +13,19 @@ class TodoService
     async addTodoItem(todoItems,userId) {
         try {
             todoItems.estimatedTime = Number(todoItems.estimatedTime);
+            const group = await this._groupRepository.findBy({_id:todoItems.groupId});
+            if(!group){
+              throw {
+                statusCode : STATUS_CODES['BAD_REQUEST'],
+                message : 'Group not found',
+              }
+            }
             const todo = await this._todoRepository.createOne({
                 ...todoItems,
                 userId,
             });
+            group.todos.push(todo._id);
+            group.save();
       return todo;
     } catch (error) {
       console.log(error);
@@ -83,8 +92,15 @@ class TodoService
         }
     }
 
-    async updateTaskSequence(updatedTodoSequence) {
+    async updateTaskSequence(groupId,updatedTodoSequence) {
         try {
+            const group = await this._groupRepository.findBy({_id: groupId});
+            if(!group) {
+                throw {
+                  statusCode:STATUS_CODES.BAD_REQUEST,
+                  message : 'Group not found',
+                }
+            }
             const bulkOps = updatedTodoSequence.map(updatedTask=>({
               updateOne:{
                 filter: { _id: updatedTask._id },
