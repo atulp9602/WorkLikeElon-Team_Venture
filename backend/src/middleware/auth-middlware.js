@@ -24,10 +24,10 @@ const validateProtectedRoute = async (req, res, next) => {
         req.user = user;
         next();
   } catch (error) {
-        if(error.name==='JsonWebTokenError') {
+        if(error.name==='JsonWebTokenError' || error.name === 'TokenExpiredError') {
           return res.status(STATUS_CODES.FORBIDDEN).json({message:error.message});
         }
-        console.log("Error in protected route", error);
+        console.log("Error in protected route", error.name);
         return res.status(500).json({ message: `Server Error ${error}` });
   }
 };

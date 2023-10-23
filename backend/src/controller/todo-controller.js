@@ -79,6 +79,27 @@ module.exports = {
         }
     },
 
+    async generateReport(req,res){
+        try {
+            const {reportType,date} = {...req.body};
+            const userId = req.user.id;
+            const reportData = await todoService.generateTaskReport(userId,reportType,date);
+
+            return res.status(STATUS_CODES.OK).json({
+                success:true,
+                data:reportData,
+                message: "Successfully get user task report",
+            });
+        } catch (error) {
+            console.log(error);
+            return res.status(error.statusCode).json({
+                success:false,
+                data:{},
+                message:error.message,
+            })
+        }
+    },
+
     async changeTaskSequence(req,res){
         try {
             const {updatedTodoSequence} = {...req.body};

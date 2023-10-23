@@ -2,12 +2,25 @@ const TodoRepository = require('../repository/todo-repo');
 const GroupRepository = require('../repository/group-repo');
 const {STATUS_CODES} = require('../utils/constant');
 const Todo = require('../models/todo');
+const moment = require('moment');
 
 class TodoService 
 {
     constructor() {
         this._todoRepository = new TodoRepository();
         this._groupRepository = new GroupRepository();
+    }
+
+    convertToISO8601 (dateString) {
+      try {
+          const formattedDate = moment(dateString, 'MM-DD-YYYY').format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+          return formattedDate; 
+      } catch (error) {
+        throw {
+          message: error.message,
+          statusCode: STATUS_CODES['INTERNAL_SERVER_ERROR'],
+        }
+      }
     }
 
     async addTodoItem(todoItems,userId) {
@@ -92,7 +105,46 @@ class TodoService
         }
     }
 
-    async updateTaskSequence(groupId,updatedTodoSequence) {
+    async generateTaskReport(userId,reportType,date) {
+      try {
+        let matchCriteria = {
+          userId : userId,
+        }
+        if(!reportType || !date) {
+          throw {
+            message: "Please provide dates",
+            statusCode:STATUS_CODES.BAD_REQUEST,
+          }
+        }
+        if(reportType === 'daily') {
+          matchCriteria.completedAt = {
+            $gte:new Date(date),
+            $lt: moment(date).add(1, 'day').toDate()
+          };
+        }
+        else if(reportType === 'weekly') {
+          matchCriteria.completedAt = {
+            $gte: moment(date).startOf('week').toDate(),
+            $lt: moment(date).endOf('week').toDate(),
+          };
+        }
+        else if(reportType === 'monthly') {
+          matchCriteria.completedAt = {
+            $gte: moment(date).startOf('month').toDate(),
+            $lt: moment(date).endOf('month').toDate(),
+          }
+        }
+        const result = await this._todoRepository.generateReport(matchCriteria);
+        return result;
+      } catch (error) {
+        throw({
+          statuscode : error.statusCode|| STATUS_CODES.INTERNAL_SERVER_ERROR,
+          message : error.message,
+        });
+      }
+    }
+
+    async updateTaskSequence(updatedTodoSequence) {
         try {
             const group = await this._groupRepository.findBy({_id: groupId});
             if(!group) {

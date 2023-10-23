@@ -33,6 +33,15 @@ const todoSchema = new mongoose.Schema(
       ref: "Group",
       required: true,
     },
+    completedAt: {
+      type: Date,
+      default: null,
+  },
+    // groupId: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "Group",
+    //   required: true,
+    // },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

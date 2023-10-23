@@ -41,6 +41,7 @@ class PomodoroService {
 
     async endTask(data) {
         try {
+            const currentDate = new Date();
             const {taskId,isTaskCompleted} = data;
             const task = await this._todoRepo.findBy({_id:taskId});
             if(!task) {
@@ -49,11 +50,20 @@ class PomodoroService {
                     message: "Task does not exist"
                 }
             }
-            let status = 'completed';
-            if(!isTaskCompleted){
-                status='todo';
-            }
-            await this._todoRepo.updateOne({_id: taskId},{status:status});
+            // let status = 'completed';
+            // if(!isTaskCompleted){
+            //     status='todo';
+            // }
+            // await this._todoRepo.updateOne({_id: taskId},{status:status});
+            const updatedTask = await this._todoRepo.updateOne(
+                {_id:taskId},
+                {
+                    $set:{
+                        status:isTaskCompleted ? 'completed' : 'todo',
+                        completedAt:isTaskCompleted ? currentDate : null,
+                    },
+                }
+            );
         } catch (error) {
             throw ({
                 statusCode:error.statusCode || STATUS_CODES.INTERNAL_SERVER_ERROR,
